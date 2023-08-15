@@ -1,12 +1,18 @@
 
-// The setup() function runs once each time the micro-controller starts
+
 void setup()
 {
+	//Initialize serial and wait for port to open:
+	Serial.begin(9600);
 
+	while (!Serial);  // wait for serial port to connect. Needed for native USB port only
+
+	pinMode(LED_BUILTIN, OUTPUT);
+	digitalWrite(LED_BUILTIN, LOW);
 }
 
-// Add the main program code into the continuous loop() function
 void loop()
 {
+
 
 }
