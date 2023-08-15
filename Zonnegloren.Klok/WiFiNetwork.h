@@ -15,11 +15,13 @@ namespace Bas
 {
 	class WiFiNetwork
 	{
+		bool isConnectedAsClient = false;
 		int wiFiStatus = WL_IDLE_STATUS;
 		void printWiFiStatus();
 	public:
 		void connectAsAccessPoint(const char* ssid);
 		void connectAsClient(const char* ssid, const char* password);		
+		bool isClient();
 		IPAddress getLocalIPAddress();
 	};
 }

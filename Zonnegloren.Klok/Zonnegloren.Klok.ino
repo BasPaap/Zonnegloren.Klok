@@ -32,6 +32,10 @@ void setup()
 
 void loop()
 {
-	mdns.update();
+	if (wiFiNetwork.isClient())
+	{
+		mdns.update();
+	}
+
 	webServer.update();
 }

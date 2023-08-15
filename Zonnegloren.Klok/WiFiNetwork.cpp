@@ -7,6 +7,7 @@
 void Bas::WiFiNetwork::connectAsAccessPoint(const char* ssid)
 {
 	WiFi.beginAP(ssid);
+	isConnectedAsClient = false;
 }
 
 void Bas::WiFiNetwork::connectAsClient(const char* ssid, const char* password)
@@ -19,6 +20,13 @@ void Bas::WiFiNetwork::connectAsClient(const char* ssid, const char* password)
 		wiFiStatus = WiFi.begin(ssid, password); // Connect to WPA/WPA2 network.
 		delay(2000); // wait 2 seconds for connection:
 	}
+
+	isConnectedAsClient = true;
+}
+
+bool Bas::WiFiNetwork::isClient()
+{
+	return isConnectedAsClient;
 }
 
 IPAddress Bas::WiFiNetwork::getLocalIPAddress()
