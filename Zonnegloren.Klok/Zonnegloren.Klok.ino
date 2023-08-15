@@ -3,8 +3,9 @@
 #include "WiFiNetwork.h"
 #include "Mdns.h"
 #include "WebServer.h"
+#include "Configuration.h"
 
-
+Bas::Configuration configuration;
 Bas::WiFiNetwork wiFiNetwork;
 Bas::Mdns mdns;
 Bas::WebServer webServer;
@@ -15,9 +16,18 @@ void setup()
 	Serial.begin(9600);
 	while (!Serial);  // wait for serial port to connect. Needed for native USB port only
 
-	wiFiNetwork.connectAsClient("foo", "bar");
-	mdns.initialize("klok.local", wiFiNetwork.getLocalIPAddress());
-	webServer.initialize();
+	configuration.initialize();
+
+	if (configuration.isAvailable())
+	{
+		wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword());
+		mdns.initialize(configuration.getDeviceDomainName(), wiFiNetwork.getLocalIPAddress());
+		webServer.initialize();
+	}
+	else
+	{
+		wiFiNetwork.connectAsAccessPoint("Zonnegloren");
+	}
 }
 
 void loop()

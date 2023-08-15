@@ -106,6 +106,7 @@
     <None Include="Zonnegloren.Klok.ino" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Configuration.h" />
     <ClInclude Include="Mdns.h" />
     <ClInclude Include="MdnsHeader.h" />
     <ClInclude Include="WebServer.h" />
@@ -113,6 +114,7 @@
     <ClInclude Include="__vm\.Zonnegloren.Klok.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Configuration.cpp" />
     <ClCompile Include="Mdns.cpp" />
     <ClCompile Include="MdnsHeader.cpp" />
     <ClCompile Include="WebServer.cpp" />
