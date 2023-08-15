@@ -39,7 +39,6 @@ namespace Bas
 		void uint32ToByteArray(uint32_t value, uint8_t* byteArray);
 
 	public:
-		Mdns();
 		void initialize(char domainName[], IPAddress localIPAddress);
 		void update();
 	};
