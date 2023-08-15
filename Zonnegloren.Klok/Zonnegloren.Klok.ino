@@ -1,10 +1,13 @@
 
 #include <WiFiNINA.h>
-#include "Mdns.h"
 #include "WiFiNetwork.h"
+#include "Mdns.h"
+#include "WebServer.h"
+
 
 Bas::WiFiNetwork wiFiNetwork;
 Bas::Mdns mdns;
+Bas::WebServer webServer;
 
 void setup()
 {
@@ -14,9 +17,11 @@ void setup()
 
 	wiFiNetwork.connectAsClient("foo", "bar");
 	mdns.initialize("klok.local", wiFiNetwork.getLocalIPAddress());
+	webServer.initialize();
 }
 
 void loop()
 {
 	mdns.update();
+	webServer.update();
 }
