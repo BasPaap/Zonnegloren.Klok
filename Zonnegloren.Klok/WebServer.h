@@ -10,13 +10,16 @@
 #endif
 
 #include<WiFiNINA.h>
+#include "Configuration.h"
 
 namespace Bas
 {
 	class WebServer
 	{
+		Configuration configuration;
 		WiFiServer server{ 80 };
 	public:
+		WebServer(Configuration configuration);
 		void initialize();
 		void update();
 	};

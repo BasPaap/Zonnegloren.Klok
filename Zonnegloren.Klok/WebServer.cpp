@@ -4,6 +4,10 @@
 
 #include "WebServer.h"
 
+Bas::WebServer::WebServer(Configuration configuration) : configuration(configuration)
+{
+}
+
 void Bas::WebServer::initialize()
 {
 	server.begin();

@@ -8,7 +8,7 @@
 Bas::Configuration configuration;
 Bas::WiFiNetwork wiFiNetwork;
 Bas::Mdns mdns;
-Bas::WebServer webServer;
+Bas::WebServer webServer { configuration };
 
 void setup()
 {
