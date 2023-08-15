@@ -19,9 +19,14 @@ namespace Bas
 	public:
 		void initialize();
 		bool isAvailable();
+		void save();
+
 		char* getSsid();
+		void setSsid(char* ssid);
 		char* getPassword();
+		void setPassword(char* password);
 		char* getDeviceDomainName();
+		void setDeviceDomainNAme(char* deviceDomainName);
 	};
 }
 
