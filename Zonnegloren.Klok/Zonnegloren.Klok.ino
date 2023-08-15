@@ -1,8 +1,9 @@
 
-#include "MDNSHeader.h"
 #include <WiFiNINA.h>
 #include "Mdns.h"
+#include "WiFiNetwork.h"
 
+Bas::WiFiNetwork wiFiNetwork;
 Bas::Mdns mdns;
 
 void setup()
@@ -11,7 +12,8 @@ void setup()
 	Serial.begin(9600);
 	while (!Serial);  // wait for serial port to connect. Needed for native USB port only
 
-	mdns.initialize("klok.local", IPAddress{127, 0, 0, 1});
+	wiFiNetwork.connectAsClient("foo", "bar");
+	mdns.initialize("klok.local", wiFiNetwork.getLocalIPAddress());
 }
 
 void loop()
