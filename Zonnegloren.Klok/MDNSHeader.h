@@ -52,35 +52,19 @@ namespace Bas
 		int numAdditionalResourceRecords;
 
 	public:
-		MdnsHeader(const unsigned char bytes[]);
-	
 		static const int NUM_BYTES_IN_HEADER = 12;
 
+		MdnsHeader(const unsigned char bytes[]);
 		rawMdnsHeader_t getRawMdnsHeader();
-		//uint16_t getTransactionId();
-		//OpCode getOpCode();
 		void setOpcode(OpCode opCode);
 		bool getIsQuery();
 		void setIsQuery(bool isQuery);
-
-		//bool getIsAuthorativeAnswer();
 		void setIsAuthorativeAnswer(bool isAuthorativeAnswer);
-
-		//bool getIsTruncated();
-		//bool getIsRecursionDesired();
-		//bool getIsRecursionAvailable();
-		//ResponseCode getResponseCode();
 		void setResponseCode(ResponseCode responseCode);
-		//bool getIsCheckingDisabled();
-		//bool getIsAuthenticatedData();
-
 		int getNumQuestions();
 		void setNumQuestions(int numQuestions);
-		//int getNumAnswers();
 		void setNumAnswers(int numAnswers);
-		//int getNumAuthorityResourceRecords();
 		void setNumAuthorityResourceRecords(int numAuthorityResourceRecords);
-		//int getNumAdditionalResourceRecords();
 		void setNumAdditionalResourceRecords(int numAdditionalResourceRecords);
 	};
 }
