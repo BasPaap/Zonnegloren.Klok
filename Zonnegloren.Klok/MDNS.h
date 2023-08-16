@@ -33,7 +33,7 @@ namespace Bas
 		void getRequestedDomainName(const unsigned char packetBuffer[], uint16_t domainNameFirstByteIndex, char domainName[], uint8_t* pDomainNameFieldLength);
 		void getDomainNameLabel(const unsigned char packetBuffer[], uint16_t labelFirstByteIndex, char domainNameLabel[], uint8_t* pDomainNameLabelFieldLength, uint16_t* pNextDomainNameLabelByteIndex, bool* pIsTerminatedByCompressionLabel);
 		bool isCompressionLabelCharacter(const char character);
-		const char * getQueryTypeName(uint16_t queryType);
+		void getQueryTypeName(uint16_t queryType, char domainNameLabel[]);
 		void domainNameToDnsDomainName(const char* domainName, unsigned char* dnsDomainName, int* dnsDomainNameSize);
 		void uint16ToByteArray(uint16_t value, uint8_t* byteArray);
 		void uint32ToByteArray(uint32_t value, uint8_t* byteArray);

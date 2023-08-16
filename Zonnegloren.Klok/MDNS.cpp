@@ -94,7 +94,8 @@ int Bas::Mdns::handleMdnsQuestion(const unsigned char packetBuffer[], int packet
 	getRequestedDomainName(packetBuffer, questionFirstByteIndex, domainName, &domainNameFieldLength);
 	uint16_t queryType = packetBuffer[questionFirstByteIndex + domainNameFieldLength] << 8 | packetBuffer[questionFirstByteIndex + domainNameFieldLength + 1];
 
-	const char* queryTypeName = getQueryTypeName(queryType);
+	char queryTypeName[10];
+	getQueryTypeName(queryType, queryTypeName);
 	Serial.print(queryTypeName);
 	Serial.print(" type query received for ");
 	Serial.println(domainName);
@@ -247,20 +248,23 @@ void Bas::Mdns::getDomainNameLabel(const unsigned char packetBuffer[], uint16_t 
 	*pNextDomainNameLabelByteIndex = currentLabelByteIndex + *pDomainNameLabelFieldLength;
 }
 
-const char* Bas::Mdns::getQueryTypeName(uint16_t queryType)
+void Bas::Mdns::getQueryTypeName(uint16_t queryType, char queryTypeName[])
 {
 	switch (queryType)
 	{
 	case QUERY_TYPE_A:
-		return "A";
+		queryTypeName = "A";
+		break;
 
 	case QUERY_TYPE_HTTPS:
-		return "HTTPS";
+		queryTypeName = "HTTPS";
+		break;
 
 	default:
-		char queryTypeName[10];
-		itoa(queryType, queryTypeName, 10);
-		return strcat(queryTypeName, " (other)");
+		char queryTypeNumber[10];
+		itoa(queryType, queryTypeNumber, 10);
+		queryTypeName = strcat(queryTypeNumber, " (other)");
+		break;
 	}
 }
 
