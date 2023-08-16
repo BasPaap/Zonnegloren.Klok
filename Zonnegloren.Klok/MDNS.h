@@ -13,13 +13,13 @@
 
 namespace Bas
 {
-	const int MAX_DOMAIN_NAME_LENGTH = 253;
-	const int MAX_DNS_PACKET_SIZE = 512;
-	const int QUERY_TYPE_A = 0x01;
-	const int QUERY_TYPE_HTTPS = 0x41;
-
 	class Mdns
 	{
+		static const int MAX_DOMAIN_NAME_LENGTH = 253;
+		static const int MAX_DNS_PACKET_SIZE = 512;
+		static const int QUERY_TYPE_A = 0x01;
+		static const int QUERY_TYPE_HTTPS = 0x41;
+
 		const IPAddress MDNS_ADDRESS{ 224, 0, 0, 251 };
 		unsigned const int MDNS_PORT = 5353;
 		const int MAX_LABEL_LENGTH = 63;
