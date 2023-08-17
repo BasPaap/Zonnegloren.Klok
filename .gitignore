@@ -396,3 +396,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/Zonnegloren.Klok/__vm/Compile.vmps.xml
+/Zonnegloren.Klok/__vm/Upload.vmps.xml
+/Zonnegloren.Klok/Zonnegloren.Klok.vcxproj.filters
