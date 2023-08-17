@@ -38,7 +38,7 @@ void loop()
 
 	if (wiFiNetwork.isClient())
 	{
-		mdns.update();	
+		mdns.update();	// Hij ontvangt in AP mode een packet van 30 bytes en hangt dan. Uitzoeken wat dat is.
 	}
 	
 	webServer.update();
