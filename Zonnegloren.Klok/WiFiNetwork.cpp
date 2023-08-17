@@ -11,6 +11,8 @@ void Bas::WiFiNetwork::connectAsAccessPoint(const char* ssid)
 	
 	wiFiStatus = WiFi.beginAP(ssid);
 	isConnectedAsClient = false;	
+
+	delay(2000);
 }
 
 void Bas::WiFiNetwork::connectAsClient(const char* ssid, const char* password)
@@ -37,7 +39,30 @@ IPAddress Bas::WiFiNetwork::getLocalIPAddress()
 	return WiFi.localIP();
 }
 
-void Bas::WiFiNetwork::printWiFiStatus()
+void Bas::WiFiNetwork::update()
+{
+	if (wiFiStatus != WiFi.status())
+	{
+		wiFiStatus = WiFi.status();
+
+		switch (wiFiStatus)
+		{
+		case WL_AP_CONNECTED:
+			Serial.println("Device connected to Access Point.");
+			break;		
+		case WL_DISCONNECTED:
+			Serial.println("Device disconnected from Access Point.");
+			break;
+		case WL_AP_LISTENING:
+			Serial.println("Access point is listening.");
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void Bas::WiFiNetwork::printWiFiClientStatus()
 {
 	Serial.print("Connected to SSID: ");
 	Serial.println(WiFi.SSID());

@@ -21,7 +21,6 @@ void Bas::WebServer::update()
 	{
 		Serial.println("Web server client available.");
 
-		Serial.println("Client available");
 		client.println("HTTP/1.1 200 OK");
 		client.println("Content-type:text/html");
 		client.println();
