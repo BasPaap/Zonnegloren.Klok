@@ -9,6 +9,7 @@ void Bas::WiFiNetwork::connectAsAccessPoint(const char* ssid)
 	Serial.print("Starting access point ");
 	Serial.println(ssid);
 	
+	WiFi.config(IPAddress(192, 168, 0, 1));
 	wiFiStatus = WiFi.beginAP(ssid);
 	isConnectedAsClient = false;	
 

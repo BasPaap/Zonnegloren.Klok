@@ -27,7 +27,6 @@ void setup()
 	else
 	{
 		wiFiNetwork.connectAsAccessPoint("Klok");
-		mdns.initialize("klok.local", wiFiNetwork.getLocalIPAddress());
 		webServer.initialize();		
 	}
 }
@@ -38,7 +37,7 @@ void loop()
 
 	if (wiFiNetwork.isClient())
 	{
-		mdns.update();	// Hij ontvangt in AP mode een packet van 30 bytes en hangt dan. Uitzoeken wat dat is.
+		mdns.update();	
 	}
 	
 	webServer.update();

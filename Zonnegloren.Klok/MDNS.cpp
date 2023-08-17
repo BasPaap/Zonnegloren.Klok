@@ -34,7 +34,7 @@ void Bas::Mdns::update()
 		Serial.print(" out of ");
 		Serial.print(packetBufferSize);
 		Serial.println(" bytes.");
-
+		
 		handleMdnsPacket(packetBuffer, packetBufferSize);
 	}
 }
