@@ -16,7 +16,6 @@
 #define __AVR_atmega4809__ 1
 #define __MEGAAVR_ATmega4809__ 1
 #define __AVR_ATmega4809__ 1
-#define _VMDEBUG 1
 #define F_CPU 16000000L
 #define ARDUINO 108010
 #define ARDUINO_AVR_UNO_WIFI_REV2 1

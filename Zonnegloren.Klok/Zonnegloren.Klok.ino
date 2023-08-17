@@ -19,23 +19,28 @@ void setup()
 	configuration.initialize();
 
 	if (configuration.isAvailable())
-	{
-		wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword());
+	{		
+		/*wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword());
 		mdns.initialize(configuration.getDeviceDomainName(), wiFiNetwork.getLocalIPAddress());
-		webServer.initialize();
+		webServer.initialize();*/
 	}
 	else
 	{
-		wiFiNetwork.connectAsAccessPoint("Zonnegloren");
+		wiFiNetwork.connectAsAccessPoint("Klok");
+
+		/*configuration.setDeviceDomainName("klok.zonnegloren.local");
+		configuration.setPassword("foo");
+		configuration.setSsid("Moby Dick, or: the Wi-Fi");
+		configuration.save();*/
 	}
 }
 
 void loop()
 {
-	if (wiFiNetwork.isClient())
+	/*if (wiFiNetwork.isClient())
 	{
 		mdns.update();
 	}
 
-	webServer.update();
+	webServer.update();*/
 }

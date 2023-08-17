@@ -6,8 +6,11 @@
 
 void Bas::WiFiNetwork::connectAsAccessPoint(const char* ssid)
 {
-	WiFi.beginAP(ssid);
-	isConnectedAsClient = false;
+	Serial.print("Starting access point ");
+	Serial.println(ssid);
+	
+	wiFiStatus = WiFi.beginAP(ssid);
+	isConnectedAsClient = false;	
 }
 
 void Bas::WiFiNetwork::connectAsClient(const char* ssid, const char* password)
