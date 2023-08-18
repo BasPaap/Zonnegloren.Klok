@@ -58,6 +58,8 @@ void Bas::WiFiNetwork::update()
 			Serial.println("Access point is listening.");
 			break;
 		default:
+			Serial.print("Wifi status: ");
+			Serial.println(wiFiStatus);
 			break;
 		}
 	}

@@ -10,11 +10,12 @@
 #endif
 
 #include<WiFiNINA.h>
+#include "NetworkInfo.h"
 
 namespace Bas
 {
 	class WiFiNetwork
-	{
+	{	
 		bool isConnectedAsClient = false;
 		int wiFiStatus = WL_IDLE_STATUS;
 		void printWiFiClientStatus();

@@ -1,10 +1,10 @@
 
+#include "NetworkInfo.h"
 #include <WiFiNINA.h>
 #include "WiFiNetwork.h"
 #include "Mdns.h"
 #include "WebServer.h"
 #include "Configuration.h"
-#include "Config-HTML.h"
 
 Bas::Configuration configuration;
 Bas::WiFiNetwork wiFiNetwork;
@@ -20,16 +20,29 @@ void setup()
 	configuration.initialize();
 
 	if (configuration.isAvailable())
-	{		
+	{
 		wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword());
 		mdns.initialize(configuration.getDeviceDomainName(), wiFiNetwork.getLocalIPAddress());
 		webServer.initialize();
 	}
 	else
 	{
+		int numNetworks = WiFi.scanNetworks();
+
+		Serial.print(numNetworks);
+		Serial.println(" Wi-Fi networks found.");
+		int scannedNetworksLength = min(numNetworks, Bas::WebServer::MAX_SCANNED_NETWORKS);
+
+		Bas::NetworkInfo scannedNetworks[Bas::WebServer::MAX_SCANNED_NETWORKS];
+
+		for (size_t i = 0; i < scannedNetworksLength; i++)
+		{
+			scannedNetworks[i] = Bas::NetworkInfo{ WiFi.SSID(i), WiFi.RSSI(i), WiFi.encryptionType(i) };
+		}
+
 		wiFiNetwork.connectAsAccessPoint("Klok");
-		webServer.initialize();		
-		webServer.setPageToServe(config_html);
+		webServer.initialize(scannedNetworks, scannedNetworksLength);
+		webServer.setPageToServe(Bas::WebServer::page::configurationPage);
 	}
 }
 
@@ -39,8 +52,8 @@ void loop()
 
 	if (wiFiNetwork.isClient())
 	{
-		mdns.update();	
+		mdns.update();
 	}
-	
+
 	webServer.update();
 }

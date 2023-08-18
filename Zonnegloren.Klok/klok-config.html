@@ -59,7 +59,7 @@
         }
     </style>
 </head>
-<body>
+<body onload="onLoad()">
     <h3>Sanatorium Zonnegloren</h3>
     <h1>De Klok</h1>
     <h2>Configuratie</h2>
@@ -146,18 +146,20 @@
             }
         }
 
+        function onLoad() {
+            var ssidElement = document.getElementById('ssid');
+            var encryptionType = ssidElement.options[ssidElement.selectedIndex].dataset.encryption;
+
+            onEncryptionTypeChanged(encryptionType);
+        }
+
         document.getElementById('ssid').onchange = function () {
             var encryptionType = this.options[this.selectedIndex].dataset.encryption;
 
             onEncryptionTypeChanged(encryptionType);
         }
 
-        window.addEventListener('load', function () {
-            var ssidElement = document.getElementById('ssid');
-            var encryptionType = ssidElement.options[ssidElement.selectedIndex].dataset.encryption;
-
-            onEncryptionTypeChanged(encryptionType);
-        });
+        
     </script>
 </body>
 </html>
