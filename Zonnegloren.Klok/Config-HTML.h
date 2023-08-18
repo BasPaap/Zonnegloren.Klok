@@ -125,21 +125,23 @@ const char* config_html2 = "                </select>"\
 ""\
 "            var encryptionElement = document.getElementById('encryption');"\
 ""\
-"            encryptionElement.value = encryptionType;"\
 ""\
 "            switch (encryptionType) {"\
 "                case \"WPA\":                    "\
 "                    show(passwordBlock);"\
 "                    hide(keyIndexBlock);"\
+"                    encryptionElement.value = 1;"\
 "                    break;"\
 "                case \"WEP\":"\
 "                    show(passwordBlock);"\
 "                    show(keyIndexBlock);"\
+"                    encryptionElement.value = 2;"\
 "                    break;"\
 "                case \"none\":"\
+"                default:"\
 "                    hide(passwordBlock);"\
 "                    hide(keyIndexBlock);"\
-"                default:"\
+"                    encryptionElement.value = 0;"\
 "                    break;"\
 "            }"\
 "        }"\
@@ -150,7 +152,6 @@ const char* config_html2 = "                </select>"\
 ""\
 "            onEncryptionTypeChanged(encryptionType);"\
 "        }"\
-
 ""\
 "        document.getElementById('ssid').onchange = function () {"\
 "            var encryptionType = this.options[this.selectedIndex].dataset.encryption;"\

@@ -126,22 +126,23 @@
             var keyIndexBlock = document.getElementById('keyIndexBlock');
 
             var encryptionElement = document.getElementById('encryption');
-
-            encryptionElement.value = encryptionType;
-
+            
             switch (encryptionType) {
                 case "WPA":                    
                     show(passwordBlock);
                     hide(keyIndexBlock);
+                    encryptionElement.value = 1;
                     break;
                 case "WEP":
                     show(passwordBlock);
                     show(keyIndexBlock);
+                    encryptionElement.value = 2;
                     break;
                 case "none":
+                default:
                     hide(passwordBlock);
                     hide(keyIndexBlock);
-                default:
+                    encryptionElement.value = 0;                
                     break;
             }
         }
