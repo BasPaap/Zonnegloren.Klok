@@ -4,6 +4,7 @@
 #include "Mdns.h"
 #include "WebServer.h"
 #include "Configuration.h"
+#include "Config-HTML.h"
 
 Bas::Configuration configuration;
 Bas::WiFiNetwork wiFiNetwork;
@@ -28,6 +29,7 @@ void setup()
 	{
 		wiFiNetwork.connectAsAccessPoint("Klok");
 		webServer.initialize();		
+		webServer.setPageToServe(config_html);
 	}
 }
 

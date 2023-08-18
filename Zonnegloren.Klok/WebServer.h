@@ -18,10 +18,12 @@ namespace Bas
 	{
 		Configuration configuration;
 		WiFiServer server{ 80 };
+		const char* html;
 	public:
 		WebServer(Configuration configuration);
 		void initialize();
 		void update();
+		void setPageToServe(const char* html);
 	};
 }
 

@@ -24,8 +24,13 @@ void Bas::WebServer::update()
 		client.println("HTTP/1.1 200 OK");
 		client.println("Content-type:text/html");
 		client.println();
-		client.print("<h1>Hello World!</h1>");
+		client.print(this->html);
 		client.println();
 		client.stop();
 	}
+}
+
+void Bas::WebServer::setPageToServe(const char* html)
+{
+	this->html = html;
 }
