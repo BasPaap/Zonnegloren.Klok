@@ -59,7 +59,7 @@
         }
     </style>
 </head>
-<body onload="onLoad()">
+<body>
     <h3>Sanatorium Zonnegloren</h3>
     <h1>De Klok</h1>
     <h2>Configuratie</h2>
@@ -147,7 +147,7 @@
             }
         }
 
-        function onLoad() {
+        window.onload = function() {
             var ssidElement = document.getElementById('ssid');
             var encryptionType = ssidElement.options[ssidElement.selectedIndex].dataset.encryption;
 

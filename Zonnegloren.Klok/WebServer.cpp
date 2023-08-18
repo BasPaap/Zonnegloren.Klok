@@ -76,7 +76,16 @@ void Bas::WebServer::update()
 
 	WiFiClient client = server.available();
 	if (client)
-	{
+	{		
+		/*Serial.print(client.available());
+		Serial.print("body");
+		for (size_t i = 0; i < client.available(); i++)
+		{
+			Serial.print((char)client.readBytesUntil().read());
+		}
+		Serial.println();*/
+		
+
 		Serial.println("Web server request received.");
 
 		client.println("HTTP/1.1 200 OK");
