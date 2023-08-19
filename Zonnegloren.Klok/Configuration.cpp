@@ -52,7 +52,7 @@ uint8_t Bas::Configuration::hash(uint8_t value, int salt)
 
 void Bas::Configuration::resetArduino() 
 {
-	asm ("jmp 0x7800");
+	asm volatile ("jmp 0x7800");
 }
 
 void Bas::Configuration::initialize()
