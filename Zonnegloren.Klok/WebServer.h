@@ -33,7 +33,8 @@ namespace Bas
 		void printWiFiOption(WiFiClient* client, const char* ssid, int32_t rssi, Bas::NetworkInfo::encryptionType_t encryptionType);
 		httpMethod getHttpMethod(WiFiClient* client);
 		int getRequestBody(WiFiClient* client, char* body);
-		void parseBody(const char* body, int length);
+		void parseConfigurationBody(char* body);
+		bool startswith(const char* string, const char* prefix);
 	public:
 		WebServer();
 		void initialize();		

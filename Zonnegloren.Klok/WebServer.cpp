@@ -114,8 +114,60 @@ int Bas::WebServer::getRequestBody(WiFiClient* client, char* body)
 	return bodyLength;
 }
 
-void Bas::WebServer::parseBody(const char* body, int length)
+void Bas::WebServer::parseConfigurationBody(char* body)
 {
+	const int MAX_SSID_LENGTH = 32;
+	const int MAX_PASSWORD_LENGTH = 63;
+	const int MAX_DOMAIN_NAME_LENGTH = 253;
+
+	const char* SSID_TOKEN = "ssid=";
+	const char* PASSWORD_TOKEN = "password=";
+	const char* DOMAIN_NAME_TOKEN = "domainName=";
+
+	char ssid[MAX_SSID_LENGTH + 1]{ 0 };
+	char password[MAX_PASSWORD_LENGTH + 1]{ 0 };
+	char domainName[MAX_DOMAIN_NAME_LENGTH + 1]{ 0 };
+	
+
+	char* token = strtok(body, "&");
+
+	while (token != NULL)
+	{
+		if (startswith(token, SSID_TOKEN))
+		{
+			strncpy(ssid, token + strlen(SSID_TOKEN), MAX_SSID_LENGTH);
+		}
+		else if (startswith(token, PASSWORD_TOKEN))
+		{
+			strncpy(password, token + strlen(PASSWORD_TOKEN), MAX_PASSWORD_LENGTH);
+		}
+		else if (startswith(token, DOMAIN_NAME_TOKEN))
+		{
+			strncpy(domainName, token + strlen(DOMAIN_NAME_TOKEN), MAX_DOMAIN_NAME_LENGTH);
+		}
+
+		token = strtok(NULL, "&");
+	}
+
+	Serial.print("ssid: ");
+	Serial.println(ssid);
+
+	Serial.print("password: ");
+	Serial.println(password);
+
+	Serial.print("domain name: ");
+	Serial.println(domainName);
+}
+
+bool Bas::WebServer::startswith(const char* string, const char* prefix)
+{
+	while (*prefix)
+	{
+		if (*prefix++ != *string++)
+			return false;
+	}
+
+	return true;
 }
 
 Bas::WebServer::WebServer()
@@ -163,6 +215,7 @@ void Bas::WebServer::update()
 
 			if (method == POST)
 			{
+				parseConfigurationBody(body);
 				// Analyse the body to find the wifi and domain info we want to save in the configuration.
 			}
 			else
