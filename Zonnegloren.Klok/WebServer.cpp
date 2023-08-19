@@ -6,54 +6,54 @@
 #include "Config-HTML.h"
 #include "NetworkInfo.h"
 
-void Bas::WebServer::printWiFiOption(WiFiClient* client, const char* ssid, int32_t rssi, Bas::NetworkInfo::encryptionType_t encryptionType)
+void Bas::WebServer::printWiFiOption(WiFiClient& client, const char* ssid, int32_t rssi, Bas::NetworkInfo::encryptionType_t encryptionType)
 {
-	client->print("<option value=\"");
-	client->print(ssid);
-	client->print("\" data-encryption=\"");
+	client.print("<option value=\"");
+	client.print(ssid);
+	client.print("\" data-encryption=\"");
 
 	switch (encryptionType)
 	{
 	case Bas::NetworkInfo::encryptionType_t::WPA:
-		client->print("WPA");
+		client.print("WPA");
 		break;
 	case Bas::NetworkInfo::encryptionType_t::WEP:
-		client->print("WEP");
+		client.print("WEP");
 		break;
 	case Bas::NetworkInfo::encryptionType_t::NONE:
 	default:
-		client->print("none");
+		client.print("none");
 		break;
 	}
 
-	client->print("\">");
-	client->print(ssid);
-	client->print(" (");
+	client.print("\">");
+	client.print(ssid);
+	client.print(" (");
 
 	switch (encryptionType)
 	{
 	case Bas::NetworkInfo::encryptionType_t::WPA:
-		client->print("WPA");
+		client.print("WPA");
 		break;
 	case Bas::NetworkInfo::encryptionType_t::WEP:
-		client->print("WEP");
+		client.print("WEP");
 		break;
 	case Bas::NetworkInfo::encryptionType_t::NONE:
 	default:
-		client->print("public");
+		client.print("public");
 		break;
 	}
 
-	client->print(")</option>");
+	client.print(")</option>");
 }
 
-Bas::WebServer::httpMethod Bas::WebServer::getHttpMethod(WiFiClient* client)
+Bas::WebServer::httpMethod Bas::WebServer::getHttpMethod(WiFiClient& client)
 {
-	if (client->available())
+	if (client.available())
 	{
 		const int MAX_METHOD_LENGTH = 6;
 		char method[MAX_METHOD_LENGTH + 1]{ 0 };
-		int numBytesRead = client->readBytesUntil(' ', method, MAX_METHOD_LENGTH);
+		int numBytesRead = client.readBytesUntil(' ', method, MAX_METHOD_LENGTH);
 
 		if (strcmp("GET", method) == 0)
 		{
@@ -84,23 +84,23 @@ Bas::WebServer::httpMethod Bas::WebServer::getHttpMethod(WiFiClient* client)
 	return UNKNOWN;
 }
 
-int Bas::WebServer::getRequestBody(WiFiClient* client, char* body)
+int Bas::WebServer::getRequestBody(WiFiClient& client, char* body)
 {
 	int bodyLength = 0;
 	int lineLength = 0;
 
-	while (client->connected() && client->available())
+	while (client.connected() && client.available())
 	{
-		char character = client->read();
+		char character = client.read();
 
 		if (character == '\r')
 		{
-			client->read(); // read the '\n' character that will follow '\r'
+			client.read(); // read the '\n' character that will follow '\r'
 						
 			if (lineLength == 0)
 			{
 				// All meta information for the request has been sent, so what will follow is the body.
-				bodyLength = client->readBytes(body, MAX_BODY_LENGTH);				
+				bodyLength = client.readBytes(body, MAX_BODY_LENGTH);				
 			}
 
 			lineLength = 0;			
@@ -198,10 +198,10 @@ void Bas::WebServer::update()
 	WiFiClient client = server.available();
 	if (client)
 	{
-		httpMethod method = getHttpMethod(&client);
+		httpMethod method = getHttpMethod(client);
 				
 		char body[MAX_BODY_LENGTH + 1]{ 0 };
-		int bodyLength = getRequestBody(&client, body);
+		int bodyLength = getRequestBody(client, body);
 		
 		Serial.println("Web server request received.");
 
@@ -224,7 +224,7 @@ void Bas::WebServer::update()
 
 				for (size_t i = 0; i < scannedNetworksLength; i++)
 				{
-					printWiFiOption(&client, scannedNetworks[i].ssid, scannedNetworks[i].rssi, scannedNetworks[i].encryptionType);
+					printWiFiOption(client, scannedNetworks[i].ssid, scannedNetworks[i].rssi, scannedNetworks[i].encryptionType);
 				}
 
 				client.print(config_html2);

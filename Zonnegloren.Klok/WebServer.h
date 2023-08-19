@@ -30,9 +30,9 @@ namespace Bas
 		Bas::NetworkInfo scannedNetworks[MAX_SCANNED_NETWORKS];
 		int scannedNetworksLength = 0;
 
-		void printWiFiOption(WiFiClient* client, const char* ssid, int32_t rssi, Bas::NetworkInfo::encryptionType_t encryptionType);
-		httpMethod getHttpMethod(WiFiClient* client);
-		int getRequestBody(WiFiClient* client, char* body);
+		void printWiFiOption(WiFiClient& client, const char* ssid, int32_t rssi, Bas::NetworkInfo::encryptionType_t encryptionType);
+		httpMethod getHttpMethod(WiFiClient& client);
+		int getRequestBody(WiFiClient& client, char* body);
 		void parseConfigurationBody(char* body);
 		bool startswith(const char* string, const char* prefix);
 	public:
