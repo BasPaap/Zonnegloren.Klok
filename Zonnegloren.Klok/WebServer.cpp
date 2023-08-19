@@ -163,7 +163,7 @@ void Bas::WebServer::update()
 
 			if (method == POST)
 			{
-
+				// Analyse the body to find the wifi and domain info we want to save in the configuration.
 			}
 			else
 			{
