@@ -24,7 +24,7 @@ void setup()
 	{
 		wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword());
 		mdns.initialize(configuration.getDeviceDomainName(), wiFiNetwork.getLocalIPAddress());
-		webServer.initialize();
+		webServer.initialize(onConfigurationDataReceived, onControlDataReceived);
 	}
 	else
 	{
@@ -42,7 +42,7 @@ void setup()
 		}
 
 		wiFiNetwork.connectAsAccessPoint("Klok");
-		webServer.initialize(scannedNetworks, scannedNetworksLength);
+		webServer.initialize(onConfigurationDataReceived, onControlDataReceived, scannedNetworks, scannedNetworksLength);
 		webServer.setPageToServe(Bas::WebServer::page::CONFIGURATION_PAGE);
 	}
 }
@@ -57,4 +57,22 @@ void loop()
 	}
 
 	webServer.update();
+}
+
+void onConfigurationDataReceived(const char* ssid, const char* password, int keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName)
+{
+	Serial.print(ssid);
+	Serial.print(" - ");
+	Serial.print(password);
+	Serial.print(" - ");
+	Serial.print(keyIndex);
+	Serial.print(" - ");
+	Serial.print(encryptionType);
+	Serial.print(" - ");
+	Serial.print(domainName);
+}
+
+void onControlDataReceived()
+{
+
 }

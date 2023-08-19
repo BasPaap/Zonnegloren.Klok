@@ -17,6 +17,8 @@ namespace Bas
 {
 	class WebServer
 	{
+		using ConfigurationDataReceivedCallbackPointer = void(*)(const char* ssid, const char* password, int keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName);
+		using ControlDataReceivedCallbackPointer = void(*)();
 	public:
 		typedef enum { CONFIGURATION_PAGE, CONTROL_PAGE } page;
 		typedef enum { UNKNOWN, GET, POST, PUT, PATCH, DELETE } httpMethod;
@@ -29,18 +31,21 @@ namespace Bas
 		
 		Bas::NetworkInfo scannedNetworks[MAX_SCANNED_NETWORKS];
 		int scannedNetworksLength = 0;
+		ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback;
+		ControlDataReceivedCallbackPointer onControlDataReceivedCallback;
 
 		void printWiFiOption(WiFiClient& client, const char* ssid, int32_t rssi, Bas::NetworkInfo::encryptionType_t encryptionType);
 		httpMethod getHttpMethod(WiFiClient& client);
 		int getRequestBody(WiFiClient& client, char* body);
-		void parseConfigurationBody(char* body);
+		void handleConfigurationData(char* body);
 		bool startswith(const char* string, const char* prefix);
 		void urlDecode(const char* input, char* output);
 		unsigned char h2int(char c);
+
 	public:
 		WebServer();
-		void initialize();		
-		void initialize(Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength);
+		void initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback);
+		void initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength);
 		void update();
 		void setPageToServe(page pageToServe);
 	};

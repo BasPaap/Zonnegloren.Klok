@@ -114,20 +114,25 @@ int Bas::WebServer::getRequestBody(WiFiClient& client, char* body)
 	return bodyLength;
 }
 
-void Bas::WebServer::parseConfigurationBody(char* body)
+void Bas::WebServer::handleConfigurationData(char* body)
 {
 	const int MAX_SSID_LENGTH = 32;
 	const int MAX_PASSWORD_LENGTH = 63;
 	const int MAX_DOMAIN_NAME_LENGTH = 253;
+	const int MAX_ENCRYPTION_TYPE_CODE_LENGTH = 1;
+	const int MAX_KEY_INDEX_LENGTH = 1;
 
 	const char* SSID_TOKEN = "ssid=";
 	const char* PASSWORD_TOKEN = "password=";
 	const char* DOMAIN_NAME_TOKEN = "domainName=";
+	const char* ENCRYPTION_TYPE_TOKEN = "encryption=";
+	const char* KEY_INDEX_TOKEN = "keyIndex=";
 
 	char ssid[MAX_SSID_LENGTH + 1]{ 0 };
 	char password[MAX_PASSWORD_LENGTH + 1]{ 0 };
 	char domainName[MAX_DOMAIN_NAME_LENGTH + 1]{ 0 };
-	
+	char encryptionTypeCode[MAX_ENCRYPTION_TYPE_CODE_LENGTH + 1]{ 0 };
+	char keyIndex[MAX_KEY_INDEX_LENGTH + 1]{ 0 };
 
 	char* token = strtok(body, "&");
 
@@ -145,18 +150,35 @@ void Bas::WebServer::parseConfigurationBody(char* body)
 		{
 			urlDecode(token + strlen(DOMAIN_NAME_TOKEN), domainName);
 		}
+		else if (startswith(token, ENCRYPTION_TYPE_TOKEN))
+		{
+			urlDecode(token + strlen(ENCRYPTION_TYPE_TOKEN), encryptionTypeCode);
+		}
+		else if (startswith(token, KEY_INDEX_TOKEN))
+		{
+			urlDecode(token + strlen(KEY_INDEX_TOKEN), keyIndex);
+		}
 
 		token = strtok(NULL, "&");
 	}
 
-	Serial.print("ssid: ");
-	Serial.println(ssid);
+	Bas::NetworkInfo::encryptionType_t encryptionType;
+	
+	switch (atoi(encryptionTypeCode))
+	{
+	case 1:
+		encryptionType = Bas::NetworkInfo::WPA;
+		break;
+	case 2:
+		encryptionType = Bas::NetworkInfo::WEP;
+		break;
+	case 0:
+	default:
+		encryptionType = Bas::NetworkInfo::NONE;
+		break;
+	}
 
-	Serial.print("password: ");
-	Serial.println(password);
-
-	Serial.print("domain name: ");
-	Serial.println(domainName);
+	this->onConfigurationDataReceivedCallback(ssid, password, atoi(keyIndex), encryptionType, domainName);
 }
 
 void Bas::WebServer::urlDecode(const char* input, char* output)
@@ -223,24 +245,30 @@ Bas::WebServer::WebServer()
 {
 }
 
-void Bas::WebServer::initialize()
+void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback)
 {
+	this->onConfigurationDataReceivedCallback = onConfigurationDataReceivedCallback;
+	this->onControlDataReceivedCallback = onControlDataReceivedCallback;
+	
 	server.begin();
 }
 
-void Bas::WebServer::initialize(Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength)
+void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength)
 {
 	this->scannedNetworksLength = scannedNetworksLength;
 	for (size_t i = 0; i < this->scannedNetworksLength; i++)
 	{
 		this->scannedNetworks[i] = Bas::NetworkInfo{ scannedNetworks[i] };
 	}
+
+	initialize(onConfigurationDataReceivedCallback, onControlDataReceivedCallback);
 }
 
 void Bas::WebServer::update()
 {
 	if (!server.status())
 	{
+		Serial.println("DUS TOCH!!!!");
 		server.begin();
 	}
 
@@ -264,7 +292,7 @@ void Bas::WebServer::update()
 
 			if (method == POST)
 			{
-				parseConfigurationBody(body);
+				handleConfigurationData(body);
 				client.println("Donezo.");
 			}
 			else
