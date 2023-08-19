@@ -35,6 +35,8 @@ namespace Bas
 		int getRequestBody(WiFiClient& client, char* body);
 		void parseConfigurationBody(char* body);
 		bool startswith(const char* string, const char* prefix);
+		void urlDecode(const char* input, char* output);
+		unsigned char h2int(char c);
 	public:
 		WebServer();
 		void initialize();		

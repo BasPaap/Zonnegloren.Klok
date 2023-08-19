@@ -135,15 +135,15 @@ void Bas::WebServer::parseConfigurationBody(char* body)
 	{
 		if (startswith(token, SSID_TOKEN))
 		{
-			strncpy(ssid, token + strlen(SSID_TOKEN), MAX_SSID_LENGTH);
+			urlDecode(token + strlen(SSID_TOKEN), ssid);			
 		}
 		else if (startswith(token, PASSWORD_TOKEN))
 		{
-			strncpy(password, token + strlen(PASSWORD_TOKEN), MAX_PASSWORD_LENGTH);
+			urlDecode(token + strlen(PASSWORD_TOKEN), password);
 		}
 		else if (startswith(token, DOMAIN_NAME_TOKEN))
 		{
-			strncpy(domainName, token + strlen(DOMAIN_NAME_TOKEN), MAX_DOMAIN_NAME_LENGTH);
+			urlDecode(token + strlen(DOMAIN_NAME_TOKEN), domainName);
 		}
 
 		token = strtok(NULL, "&");
@@ -157,6 +157,55 @@ void Bas::WebServer::parseConfigurationBody(char* body)
 
 	Serial.print("domain name: ");
 	Serial.println(domainName);
+}
+
+void Bas::WebServer::urlDecode(const char* input, char* output)
+{	
+	char c;
+	char code0;
+	char code1;
+	int outputLength = 0;
+
+	for (int i = 0; i < strlen(input); i++) 
+	{
+		c = input[i];
+		if (c == '+') {
+			output[outputLength++] = ' ';
+		}
+		else if (c == '%') 
+		{
+			code0 = input[++i];
+			code1 = input[++i];
+			c = (h2int(code0) << 4) | h2int(code1);
+			output[outputLength++] = c;
+		}
+		else 
+		{
+			output[outputLength++] = c;
+		}
+
+		//yield();
+	}
+
+	output[outputLength] = 0;
+}
+
+unsigned char Bas::WebServer::h2int(char c)
+{
+	if (c >= '0' && c <= '9') 
+	{
+		return((unsigned char)c - '0');
+	}
+	if (c >= 'a' && c <= 'f') 
+	{
+		return((unsigned char)c - 'a' + 10);
+	}
+	if (c >= 'A' && c <= 'F') 
+	{
+		return((unsigned char)c - 'A' + 10);
+	}
+
+	return(0);
 }
 
 bool Bas::WebServer::startswith(const char* string, const char* prefix)
@@ -216,7 +265,7 @@ void Bas::WebServer::update()
 			if (method == POST)
 			{
 				parseConfigurationBody(body);
-				// Analyse the body to find the wifi and domain info we want to save in the configuration.
+				client.println("Donezo.");
 			}
 			else
 			{
