@@ -69,7 +69,24 @@ void Bas::Configuration::initialize()
 		return;
 	}
 
-	int domainNameAddress = passwordAddress + strlen(this->password) + 1;
+	int keyIndexAddress = passwordAddress + strlen(this->password) + 1;
+	this->keyIndex = EEPROM.read(keyIndexAddress);
+	int encryptionTypeAddress = keyIndexAddress + MAX_KEY_INDEX_LENGTH;
+	switch (EEPROM.read(encryptionTypeAddress))
+	{
+	case 1:
+		this->encryptionType = Bas::NetworkInfo::WPA;
+		break;
+	case 2:
+		this->encryptionType = Bas::NetworkInfo::WEP;
+		break;
+	case 0:
+	default:
+		this->encryptionType = Bas::NetworkInfo::NONE;
+		break;
+	}
+
+	int domainNameAddress = encryptionTypeAddress + MAX_ENCRYPTION_TYPE_LENGTH + 1;
 	if (!readValue(domainNameAddress, MAX_DOMAIN_NAME_LENGTH, this->deviceDomainName))
 	{
 		return;
@@ -86,8 +103,11 @@ void Bas::Configuration::initialize()
 
 	this->areValuesFound = true;
 
+	Serial.println("From EEPROM:");
 	Serial.println(this->ssid);
 	Serial.println(this->password);
+	Serial.println(this->keyIndex);
+	Serial.println(this->encryptionType);
 	Serial.println(this->deviceDomainName);
 }
 
@@ -109,7 +129,13 @@ void Bas::Configuration::save()
 		int passwordAddress = ssidAddress + strlen(this->ssid) + 1;
 		writeValue(passwordAddress, this->password);
 
-		int domainNameAddress = passwordAddress + strlen(this->password) + 1;
+		int keyIndexAddress = passwordAddress + strlen(this->password) + 1;
+		EEPROM.put(keyIndexAddress, this->keyIndex);
+
+		int encryptionTypeAddress = keyIndexAddress + 1;
+		EEPROM.put(encryptionTypeAddress, this->encryptionType);
+
+		int domainNameAddress = encryptionTypeAddress + 1;
 		writeValue(domainNameAddress, this->deviceDomainName, strlen(this->deviceDomainName) - 6);
 	}	
 }
@@ -154,4 +180,24 @@ char* Bas::Configuration::getDeviceDomainName()
 void Bas::Configuration::setDeviceDomainName(const char* deviceDomainName)
 {
 	strcpy(this->deviceDomainName, deviceDomainName);
+}
+
+int8_t Bas::Configuration::getKeyIndex()
+{
+	return keyIndex;
+}
+
+void Bas::Configuration::setKeyIndex(int8_t keyIndex)
+{
+	this->keyIndex = keyIndex;
+}
+
+Bas::NetworkInfo::encryptionType_t Bas::Configuration::getEncryptionType()
+{
+	return encryptionType;
+}
+
+void Bas::Configuration::setEncryptionType(Bas::NetworkInfo::encryptionType_t encryptionType)
+{
+	this->encryptionType = encryptionType;
 }

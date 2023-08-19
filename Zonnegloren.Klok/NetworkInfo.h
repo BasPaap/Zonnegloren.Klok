@@ -15,7 +15,7 @@ namespace Bas
 	{
 	public:
 		static const int MAX_SSID_LENGTH = 32;
-		typedef enum { WPA, WEP, NONE } encryptionType_t;
+		typedef enum { NONE, WPA, WEP } encryptionType_t;
 		NetworkInfo();
 		NetworkInfo(const char* ssid, int32_t rssi, uint8_t encryptionType);
 		char ssid[MAX_SSID_LENGTH +1];

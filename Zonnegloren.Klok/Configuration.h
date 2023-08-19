@@ -16,11 +16,17 @@ namespace Bas
 		static const int MAX_SSID_LENGTH = 32;
 		static const int MAX_PASSWORD_LENGTH = 63;
 		static const int MAX_DOMAIN_NAME_LENGTH = 253;
+		static const int MAX_KEY_INDEX_LENGTH = 1;
+		static const int MAX_ENCRYPTION_TYPE_LENGTH = 1;
+
 		static const char HASH_VALUE = 'B';
 
 		char ssid[MAX_SSID_LENGTH + 1];
 		char password[MAX_PASSWORD_LENGTH + 1];
 		char deviceDomainName[MAX_DOMAIN_NAME_LENGTH + 1];
+		Bas::NetworkInfo::encryptionType_t encryptionType;
+		int8_t keyIndex;
+
 		bool areValuesFound;
 		bool readValue(int address, int maxLength, char* value);
 		void writeValue(int address, char* value);
@@ -40,6 +46,10 @@ namespace Bas
 		void setPassword(const char* password);
 		char* getDeviceDomainName();
 		void setDeviceDomainName(const char* deviceDomainName);
+		int8_t getKeyIndex();
+		void setKeyIndex(int8_t keyIndex);
+		Bas::NetworkInfo::encryptionType_t getEncryptionType();
+		void setEncryptionType(Bas::NetworkInfo::encryptionType_t encryptionType);
 	};
 }
 
