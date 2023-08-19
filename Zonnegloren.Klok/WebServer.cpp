@@ -114,7 +114,7 @@ int Bas::WebServer::getRequestBody(WiFiClient* client, char* body)
 	return bodyLength;
 }
 
-Bas::WebServer::WebServer(Configuration configuration) : configuration(configuration)
+Bas::WebServer::WebServer()
 {
 }
 

@@ -23,8 +23,7 @@ namespace Bas
 		static const int MAX_SCANNED_NETWORKS = 20;
 		static const int MAX_BODY_LENGTH = 255;
 
-	private:
-		Configuration configuration;
+	private:		
 		WiFiServer server{ 80 };
 		page pageToServe;
 		
@@ -35,7 +34,7 @@ namespace Bas
 		httpMethod getHttpMethod(WiFiClient* client);
 		int getRequestBody(WiFiClient* client, char* body);
 	public:
-		WebServer(Configuration configuration);
+		WebServer();
 		void initialize();		
 		void initialize(Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength);
 		void update();
