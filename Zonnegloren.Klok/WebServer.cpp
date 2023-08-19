@@ -114,6 +114,10 @@ int Bas::WebServer::getRequestBody(WiFiClient* client, char* body)
 	return bodyLength;
 }
 
+void Bas::WebServer::parseBody(const char* body, int length)
+{
+}
+
 Bas::WebServer::WebServer()
 {
 }
