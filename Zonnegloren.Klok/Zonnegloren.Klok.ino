@@ -42,7 +42,7 @@ void setup()
 
 		wiFiNetwork.connectAsAccessPoint("Klok");
 		webServer.initialize(scannedNetworks, scannedNetworksLength);
-		webServer.setPageToServe(Bas::WebServer::page::configurationPage);
+		webServer.setPageToServe(Bas::WebServer::page::CONFIGURATION_PAGE);
 	}
 }
 

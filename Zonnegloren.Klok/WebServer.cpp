@@ -38,13 +38,80 @@ void Bas::WebServer::printWiFiOption(WiFiClient* client, const char* ssid, int32
 	case Bas::NetworkInfo::encryptionType_t::WEP:
 		client->print("WEP");
 		break;
-	case Bas::NetworkInfo::encryptionType_t::NONE:		
+	case Bas::NetworkInfo::encryptionType_t::NONE:
 	default:
-		client->print("public");		
+		client->print("public");
 		break;
 	}
 
 	client->print(")</option>");
+}
+
+Bas::WebServer::httpMethod Bas::WebServer::getHttpMethod(WiFiClient* client)
+{
+	if (client->available())
+	{
+		const int MAX_METHOD_LENGTH = 6;
+		char method[MAX_METHOD_LENGTH + 1]{ 0 };
+		int numBytesRead = client->readBytesUntil(' ', method, MAX_METHOD_LENGTH);
+
+		if (strcmp("GET", method) == 0)
+		{
+			return GET;
+		}
+		else if (strcmp("POST", method) == 0)
+		{
+			return POST;
+		}
+		else if (strcmp("PUT", method) == 0)
+		{
+			return PUT;
+		}
+		else if (strcmp("PATCH", method) == 0)
+		{
+			return PATCH;
+		}
+		else if (strcmp("DELETE", method) == 0)
+		{
+			return POST;
+		}
+		else
+		{
+			return UNKNOWN;
+		}
+	}
+
+	return UNKNOWN;
+}
+
+int Bas::WebServer::getRequestBody(WiFiClient* client, char* body)
+{
+	int bodyLength = 0;
+	int lineLength = 0;
+
+	while (client->connected() && client->available())
+	{
+		char character = client->read();
+
+		if (character == '\r')
+		{
+			client->read(); // read the '\n' character that will follow '\r'
+						
+			if (lineLength == 0)
+			{
+				// All meta information for the request has been sent, so what will follow is the body.
+				bodyLength = client->readBytes(body, MAX_BODY_LENGTH);				
+			}
+
+			lineLength = 0;			
+		}
+		else
+		{
+			lineLength++;
+		}
+	}
+
+	return bodyLength;
 }
 
 Bas::WebServer::WebServer(Configuration configuration) : configuration(configuration)
@@ -72,20 +139,14 @@ void Bas::WebServer::update()
 		server.begin();
 	}
 
-	//Serial.println(server.status());
-
 	WiFiClient client = server.available();
 	if (client)
-	{		
-		/*Serial.print(client.available());
-		Serial.print("body");
-		for (size_t i = 0; i < client.available(); i++)
-		{
-			Serial.print((char)client.readBytesUntil().read());
-		}
-		Serial.println();*/
+	{
+		httpMethod method = getHttpMethod(&client);
+				
+		char body[MAX_BODY_LENGTH + 1]{ 0 };
+		int bodyLength = getRequestBody(&client, body);
 		
-
 		Serial.println("Web server request received.");
 
 		client.println("HTTP/1.1 200 OK");
@@ -94,18 +155,25 @@ void Bas::WebServer::update()
 
 		switch (pageToServe)
 		{
-		case Bas::WebServer::page::configurationPage:
-			
-			client.print(config_html1); 			
-			
-			for (size_t i = 0; i < scannedNetworksLength; i++)
-			{
-				printWiFiOption(&client, scannedNetworks[i].ssid, scannedNetworks[i].rssi, scannedNetworks[i].encryptionType);
-			}
+		case Bas::WebServer::page::CONFIGURATION_PAGE:
 
-			client.print(config_html2);
+			if (method == POST)
+			{
+
+			}
+			else
+			{
+				client.print(config_html1);
+
+				for (size_t i = 0; i < scannedNetworksLength; i++)
+				{
+					printWiFiOption(&client, scannedNetworks[i].ssid, scannedNetworks[i].rssi, scannedNetworks[i].encryptionType);
+				}
+
+				client.print(config_html2);
+			}
 			break;
-		case Bas::WebServer::page::controlPage:
+		case Bas::WebServer::page::CONTROL_PAGE:
 		default:
 			client.print("hello world");
 			break;
