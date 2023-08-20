@@ -63,27 +63,12 @@
     <p class="centered">Nog <span id="numSecondsRemainingText"></span> seconde<span id="pluralityCharacter">n</span>...</p>
 
     <script type="text/javascript">
-        var intervalId;
-        var progressbar = document.getElementById('progressBar');
-        var numSecondsRemainingText = document.getElementById('numSecondsRemainingText');
-        var pluralityCharacter = document.getElementById('pluralityCharacter');
-        var urlText = document.getElementById('urlText');
-        var url = "http://klok.local";
-
-        var timeoutInSeconds = 30;
-        var numSecondsRemaining = timeoutInSeconds;
-
-        window.onload = function () {
-            intervalId = setInterval(updateProgress, 10);
-            progressbar.max = timeoutInSeconds;
-            urlText.textContent = url;
-        }
 
         function updateProgress() {
             numSecondsRemaining -= 0.01;
-            
+
             progressbar.value = timeoutInSeconds - numSecondsRemaining;
-            
+
             //progressBar.value = percentage;
             var numRoundedSecondsRemaining = Math.round(numSecondsRemaining);
             numSecondsRemainingText.textContent = numRoundedSecondsRemaining;
@@ -100,6 +85,24 @@
                 location.href = url;
             }
         }
+
+        var intervalId;
+        var progressbar = document.getElementById('progressBar');
+        var numSecondsRemainingText = document.getElementById('numSecondsRemainingText');
+        var pluralityCharacter = document.getElementById('pluralityCharacter');
+        var urlText = document.getElementById('urlText');
+        var url = "http://klok.local";
+
+        var timeoutInSeconds = 30;
+        var numSecondsRemaining = timeoutInSeconds;
+
+        window.onload = function () {
+            intervalId = setInterval(updateProgress, 10);
+            progressbar.max = timeoutInSeconds;
+            urlText.textContent = url;
+        }
+
+        
 
     </script>
 </body>

@@ -6,18 +6,24 @@
 #include "Mdns.h"
 #include "WebServer.h"
 #include "Configuration.h"
+#include "Button.h";
+
+const int clearConfigurationButtonPin = 12;
+const unsigned long debounceDelay = 50;
 
 Bas::Configuration configuration;
 Bas::WiFiNetwork wiFiNetwork;
 Bas::Mdns mdns;
 Bas::WebServer webServer;
+Bas::Button clearConfigurationButton { clearConfigurationButtonPin, debounceDelay };
 
 void setup()
 {
 	//Initialize serial and wait for port to open:
 	Serial.begin(9600);
 	while (!Serial);  // wait for serial port to connect. Needed for native USB port only
-		
+	
+	clearConfigurationButton.initialize(onClearConfigurationButtonPressed);
 	configuration.initialize();
 		
 	if (configuration.isAvailable())
@@ -51,6 +57,7 @@ void setup()
 
 void loop()
 {
+	clearConfigurationButton.update();
 	wiFiNetwork.update();
 	mdns.update();
 	webServer.update();
@@ -69,6 +76,12 @@ void onConfigurationDataReceived(const char* ssid, const char* password, uint8_t
 void onControlDataReceived()
 {
 
+}
+
+void onClearConfigurationButtonPressed()
+{
+	configuration.clear();
+	onResetRequested();
 }
 
 void onResetRequested()
