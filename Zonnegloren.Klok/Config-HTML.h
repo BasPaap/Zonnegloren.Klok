@@ -94,7 +94,7 @@ const char* config_html2 = "                </select>\n"\
 "                <label for=\"domainName\">Domeinnaam waarop de klok te bereiken is:</label>\n"\
 "                <span class=\"domainElements\">\n"\
 "                    http://\n"\
-"                    <input type=\"text\" maxlength=\"247\" name=\"domainName\" id=\"domainName\" value=\"klok\" />\n"\
+"                    <input type=\"text\" maxlength=\"63\" name=\"domainName\" id=\"domainName\" value=\"klok\" />\n"\
 "                    .local\n"\
 "                </span>\n"\
 "            </p>\n"\
