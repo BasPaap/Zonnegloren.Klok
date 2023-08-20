@@ -6,7 +6,6 @@
 #include "Mdns.h"
 #include "WebServer.h"
 #include "Configuration.h"
-#include <EEPROM.h>
 
 Bas::Configuration configuration;
 Bas::WiFiNetwork wiFiNetwork;
@@ -22,7 +21,7 @@ void setup()
 	configuration.initialize();
 		
 	if (configuration.isAvailable())
-	{			
+	{
 		wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword(), configuration.getKeyIndex(), configuration.getEncryptionType());
 		mdns.initialize(configuration.getDeviceDomainName(), wiFiNetwork.getLocalIPAddress());
 		webServer.initialize(onConfigurationDataReceived, onControlDataReceived, onResetRequested);

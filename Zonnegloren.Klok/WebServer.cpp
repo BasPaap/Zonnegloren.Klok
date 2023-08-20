@@ -4,6 +4,7 @@
 
 #include "WebServer.h"
 #include "Config-HTML.h"
+#include "Confirm-Config-HTML.h"
 #include "NetworkInfo.h"
 
 void Bas::WebServer::printWiFiOption(WiFiClient& client, const char* ssid, int32_t rssi, Bas::NetworkInfo::encryptionType_t encryptionType)
@@ -114,25 +115,16 @@ int Bas::WebServer::getRequestBody(WiFiClient& client, char* body)
 	return bodyLength;
 }
 
-void Bas::WebServer::handleConfigurationData(char* body)
+void Bas::WebServer::parseConfigurationData(char* body, char* ssid, char* password, char* domainName, Bas::NetworkInfo::encryptionType_t* encryptionType, uint8_t* keyIndex)
 {
-	const int MAX_SSID_LENGTH = 32;
-	const int MAX_PASSWORD_LENGTH = 63;
-	const int MAX_DOMAIN_NAME_LENGTH = 253;
-	const int MAX_ENCRYPTION_TYPE_CODE_LENGTH = 1;
-	const int MAX_KEY_INDEX_LENGTH = 1;
-
 	const char* SSID_TOKEN = "ssid=";
 	const char* PASSWORD_TOKEN = "password=";
 	const char* DOMAIN_NAME_TOKEN = "domainName=";
 	const char* ENCRYPTION_TYPE_TOKEN = "encryption=";
 	const char* KEY_INDEX_TOKEN = "keyIndex=";
-
-	char ssid[MAX_SSID_LENGTH + 1]{ 0 };
-	char password[MAX_PASSWORD_LENGTH + 1]{ 0 };
-	char domainName[MAX_DOMAIN_NAME_LENGTH + 1]{ 0 };
-	char encryptionTypeCode[MAX_ENCRYPTION_TYPE_CODE_LENGTH + 1]{ 0 };
-	char keyIndex[MAX_KEY_INDEX_LENGTH + 1]{ 0 };
+	
+	char encryptionTypeCode[MAX_ENCRYPTION_TYPE_CODE_LENGTH + 1];
+	char keyIndexCode[MAX_KEY_INDEX_LENGTH + 1];
 
 	char* token = strtok(body, "&");
 
@@ -156,29 +148,27 @@ void Bas::WebServer::handleConfigurationData(char* body)
 		}
 		else if (startswith(token, KEY_INDEX_TOKEN))
 		{
-			urlDecode(token + strlen(KEY_INDEX_TOKEN), keyIndex);
+			urlDecode(token + strlen(KEY_INDEX_TOKEN), keyIndexCode);
 		}
 
 		token = strtok(NULL, "&");
 	}
 
-	Bas::NetworkInfo::encryptionType_t encryptionType;
+	*keyIndex = atoi(keyIndexCode);
 	
 	switch (atoi(encryptionTypeCode))
 	{
 	case 1:
-		encryptionType = Bas::NetworkInfo::WPA;
+		*encryptionType = Bas::NetworkInfo::WPA;
 		break;
 	case 2:
-		encryptionType = Bas::NetworkInfo::WEP;
+		*encryptionType = Bas::NetworkInfo::WEP;
 		break;
 	case 0:
 	default:
-		encryptionType = Bas::NetworkInfo::NONE;
+		*encryptionType = Bas::NetworkInfo::NONE;
 		break;
 	}	
-	
-	this->onConfigurationDataReceivedCallback(ssid, password, atoi(keyIndex), encryptionType, strlwr(domainName));
 }
 
 void Bas::WebServer::urlDecode(const char* input, char* output)
@@ -286,14 +276,28 @@ void Bas::WebServer::update()
 		client.println("Content-type:text/html");
 		client.println();
 
+		
 		switch (pageToServe)
 		{
 		case CONFIGURATION_PAGE:
 
 			if (method == POST)
 			{
-				handleConfigurationData(body);
-				client.println("Donezo.");
+				char ssid[MAX_SSID_LENGTH + 1];
+				char password[MAX_PASSWORD_LENGTH + 1];
+				char domainName[MAX_DOMAIN_NAME_LENGTH + 1];
+				Bas::NetworkInfo::encryptionType_t encryptionType;
+				uint8_t keyIndex;
+				
+				parseConfigurationData(body, ssid, password, domainName, &encryptionType, &keyIndex);
+				
+				client.print(confirm_config_html1);
+				client.print(ssid);
+				client.print(confirm_config_html2);
+				client.print(domainName);
+				client.print(confirm_config_html3);
+
+				this->onConfigurationDataReceivedCallback(ssid, password, keyIndex, encryptionType, strlwr(domainName));
 			}
 			else
 			{

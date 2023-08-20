@@ -17,6 +17,12 @@ namespace Bas
 {
 	class WebServer
 	{
+		const int MAX_SSID_LENGTH = 32;
+		const int MAX_PASSWORD_LENGTH = 63;
+		const int MAX_DOMAIN_NAME_LENGTH = 253;
+		const int MAX_ENCRYPTION_TYPE_CODE_LENGTH = 1;
+		const int MAX_KEY_INDEX_LENGTH = 1;
+
 		using ConfigurationDataReceivedCallbackPointer = void(*)(const char* ssid, const char* password, uint8_t keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName);
 		using ControlDataReceivedCallbackPointer = void(*)();
 		using RequestResetCallbackPointer = void(*)();
@@ -39,7 +45,7 @@ namespace Bas
 		void printWiFiOption(WiFiClient& client, const char* ssid, int32_t rssi, Bas::NetworkInfo::encryptionType_t encryptionType);
 		httpMethod getHttpMethod(WiFiClient& client);
 		int getRequestBody(WiFiClient& client, char* body);
-		void handleConfigurationData(char* body);
+		void parseConfigurationData(char* body, char* ssid, char* password, char* domainName, Bas::NetworkInfo::encryptionType_t* encryptionType, uint8_t* keyIndex);
 		bool startswith(const char* string, const char* prefix);
 		void urlDecode(const char* input, char* output);
 		unsigned char h2int(char c);
