@@ -28,10 +28,11 @@ void setup()
 		
 	if (configuration.isAvailable())
 	{
-		wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword(), configuration.getKeyIndex(), configuration.getEncryptionType());
+		wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword(), configuration.getKeyIndex(), configuration.getEncryptionType(), onConnectionFailure);
 		mdns.initialize(configuration.getDeviceDomainName(), wiFiNetwork.getLocalIPAddress());
 		webServer.initialize(onConfigurationDataReceived, onControlDataReceived, onResetRequested);
 		webServer.setPageToServe(Bas::WebServer::page::CONTROL_PAGE);
+		
 	}
 	else
 	{
@@ -76,6 +77,13 @@ void onConfigurationDataReceived(const char* ssid, const char* password, uint8_t
 void onControlDataReceived()
 {
 
+}
+
+void onConnectionFailure()
+{
+	Serial.println("Could not connect to the network, possibly because of incorrect settings. Clearing settings and rebooting to configuration mode.");
+	configuration.clear();
+	onResetRequested();
 }
 
 void onClearConfigurationButtonPressed()

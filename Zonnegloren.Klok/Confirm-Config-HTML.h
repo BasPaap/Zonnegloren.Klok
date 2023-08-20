@@ -70,8 +70,6 @@ const char* confirm_config_html2 = "</span>.</p>\n"\
 "            numSecondsRemaining -= 0.01;\n"\
 "            \n"\
 "            progressbar.value = timeoutInSeconds - numSecondsRemaining;\n"\
-"            \n"\
-"            //progressBar.value = percentage;\n"\
 "            var numRoundedSecondsRemaining = Math.round(numSecondsRemaining);\n"\
 "            numSecondsRemainingText.textContent = numRoundedSecondsRemaining;\n"\
 "\n"\

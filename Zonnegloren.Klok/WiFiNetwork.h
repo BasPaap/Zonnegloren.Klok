@@ -16,12 +16,13 @@ namespace Bas
 {
 	class WiFiNetwork
 	{	
+		using CallbackPointer = void(*)();
 		bool isConnectedAsClient = false;
 		int wiFiStatus = WL_IDLE_STATUS;
 		void printWiFiClientStatus();
 	public:
 		void connectAsAccessPoint(const char* ssid);
-		void connectAsClient(const char* ssid, const char* password, uint8_t keyIndex, Bas::NetworkInfo::encryptionType_t encryptionType);
+		void connectAsClient(const char* ssid, const char* password, uint8_t keyIndex, Bas::NetworkInfo::encryptionType_t encryptionType, CallbackPointer onConnectionFailureCallback);
 		bool isClient();
 		IPAddress getLocalIPAddress();
 		void update();		

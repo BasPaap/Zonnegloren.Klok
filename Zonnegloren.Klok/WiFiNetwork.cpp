@@ -16,9 +16,12 @@ void Bas::WiFiNetwork::connectAsAccessPoint(const char* ssid)
 	delay(2000);
 }
 
-void Bas::WiFiNetwork::connectAsClient(const char* ssid, const char* password, uint8_t keyIndex, Bas::NetworkInfo::encryptionType_t encryptionType)
+void Bas::WiFiNetwork::connectAsClient(const char* ssid, const char* password, uint8_t keyIndex, Bas::NetworkInfo::encryptionType_t encryptionType, CallbackPointer onConnectionFailureCallback)
 {
-	while (wiFiStatus != WL_CONNECTED)
+	const int MAX_ATTEMPTS = 10;
+	int numAttempts = 0;
+
+	while (wiFiStatus != WL_CONNECTED && numAttempts < MAX_ATTEMPTS)
 	{
 		Serial.print("Attempting to connect to SSID: ");
 		Serial.println(ssid);
@@ -38,9 +41,19 @@ void Bas::WiFiNetwork::connectAsClient(const char* ssid, const char* password, u
 		}
 		
 		delay(2000); // wait 2 seconds for connection:
+
+		numAttempts++;
 	}
 
-	isConnectedAsClient = true;
+	if (wiFiStatus == WL_CONNECTED)
+	{
+		isConnectedAsClient = true;
+		return;
+	}
+	else
+	{
+		onConnectionFailureCallback();
+	}
 }
 
 bool Bas::WiFiNetwork::isClient()
