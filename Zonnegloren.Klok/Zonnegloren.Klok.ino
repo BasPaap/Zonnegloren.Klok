@@ -22,7 +22,7 @@ void setup()
 	configuration.initialize();
 		
 	if (configuration.isAvailable())
-	{		
+	{	
 		wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword(), configuration.getKeyIndex(), configuration.getEncryptionType());
 		mdns.initialize(configuration.getDeviceDomainName(), wiFiNetwork.getLocalIPAddress());
 		webServer.initialize(onConfigurationDataReceived, onControlDataReceived);
@@ -43,6 +43,7 @@ void setup()
 		}
 
 		wiFiNetwork.connectAsAccessPoint("Klok");
+		mdns.initialize("klok.local", wiFiNetwork.getLocalIPAddress());
 		webServer.initialize(onConfigurationDataReceived, onControlDataReceived, scannedNetworks, scannedNetworksLength);
 		webServer.setPageToServe(Bas::WebServer::page::CONFIGURATION_PAGE);
 	}
@@ -51,12 +52,7 @@ void setup()
 void loop()
 {
 	wiFiNetwork.update();
-
-	if (wiFiNetwork.isClient())
-	{
-		mdns.update();
-	}
-
+	mdns.update();
 	webServer.update();
 }
 
