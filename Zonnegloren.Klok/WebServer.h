@@ -26,8 +26,9 @@ namespace Bas
 		using ConfigurationDataReceivedCallbackPointer = void(*)(const char* ssid, const char* password, uint8_t keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName);
 		using ControlDataReceivedCallbackPointer = void(*)();
 		using RequestResetCallbackPointer = void(*)();
+		using CalibrationDataReceivedCallbackPointer = void(*)(uint8_t hours, uint8_t minutes);
 	public:
-		typedef enum { CONFIGURATION_PAGE, CONTROL_PAGE } page;
+		typedef enum { CONFIGURATION_PAGE, FIRST_CALIBRATION_PAGE, CONTROL_PAGE } page;
 		typedef enum { UNKNOWN, GET, POST, PUT, PATCH, DELETE } httpMethod;
 		static const int MAX_SCANNED_NETWORKS = 20;
 		static const int MAX_BODY_LENGTH = 255;
@@ -41,6 +42,7 @@ namespace Bas
 		ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback;
 		ControlDataReceivedCallbackPointer onControlDataReceivedCallback;
 		RequestResetCallbackPointer requestResetCallback;
+		CalibrationDataReceivedCallbackPointer calibrationDataReceivedCallback;
 
 		void printWiFiOption(WiFiClient& client, const char* ssid, int32_t rssi, Bas::NetworkInfo::encryptionType_t encryptionType);
 		httpMethod getHttpMethod(WiFiClient& client);
@@ -52,8 +54,8 @@ namespace Bas
 
 	public:
 		WebServer();
-		void initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback);
-		void initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength);
+		void initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback);
+		void initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength);
 		void update();
 		void setPageToServe(page pageToServe);
 	};

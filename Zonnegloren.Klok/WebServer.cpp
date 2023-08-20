@@ -5,6 +5,7 @@
 #include "WebServer.h"
 #include "Config-HTML.h"
 #include "Confirm-Config-HTML.h"
+#include "First-Calibration-HTML.h"
 #include "NetworkInfo.h"
 
 void Bas::WebServer::printWiFiOption(WiFiClient& client, const char* ssid, int32_t rssi, Bas::NetworkInfo::encryptionType_t encryptionType)
@@ -235,16 +236,17 @@ Bas::WebServer::WebServer()
 {
 }
 
-void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback)
+void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback)
 {
 	this->onConfigurationDataReceivedCallback = onConfigurationDataReceivedCallback;
 	this->onControlDataReceivedCallback = onControlDataReceivedCallback;
 	this->requestResetCallback = requestResetCallback;
+	this->calibrationDataReceivedCallback = onCalibrationDataReceivedCallback;
 	
 	server.begin();
 }
 
-void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength)
+void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength)
 {
 	this->scannedNetworksLength = scannedNetworksLength;
 	for (size_t i = 0; i < this->scannedNetworksLength; i++)
@@ -252,7 +254,7 @@ void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfi
 		this->scannedNetworks[i] = Bas::NetworkInfo{ scannedNetworks[i] };
 	}
 
-	initialize(onConfigurationDataReceivedCallback, onControlDataReceivedCallback, requestResetCallback);
+	initialize(onConfigurationDataReceivedCallback, onControlDataReceivedCallback, requestResetCallback, onCalibrationDataReceivedCallback);
 }
 
 void Bas::WebServer::update()
@@ -275,8 +277,7 @@ void Bas::WebServer::update()
 		client.println("HTTP/1.1 200 OK");
 		client.println("Content-type:text/html");
 		client.println();
-
-		
+				
 		switch (pageToServe)
 		{
 		case CONFIGURATION_PAGE:
@@ -311,7 +312,20 @@ void Bas::WebServer::update()
 				client.print(config_html2);
 			}
 			break;
-		case CONTROL_PAGE:
+		case FIRST_CALIBRATION_PAGE:
+			if (method != POST)
+			{
+				client.print(first_calibration_html);
+				break;
+			}
+			else
+			{
+				// TODO: get the calibration data from the POST request.
+				calibrationDataReceivedCallback(0, 0);
+				setPageToServe(CONTROL_PAGE); // Serve Control pages from now on.
+				// NOTE: don't break here! We want it to fall through to CONTROL_PAGE.
+			}			
+		case CONTROL_PAGE:			
 		default:
 			client.print("hello world");
 			break;

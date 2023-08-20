@@ -30,9 +30,8 @@ void setup()
 	{
 		wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword(), configuration.getKeyIndex(), configuration.getEncryptionType(), onConnectionFailure);
 		mdns.initialize(configuration.getDeviceDomainName(), wiFiNetwork.getLocalIPAddress());
-		webServer.initialize(onConfigurationDataReceived, onControlDataReceived, onResetRequested);
-		webServer.setPageToServe(Bas::WebServer::page::CONTROL_PAGE);
-		
+		webServer.initialize(onConfigurationDataReceived, onControlDataReceived, onResetRequested, onCalibrationDataReceived);
+		webServer.setPageToServe(Bas::WebServer::page::FIRST_CALIBRATION_PAGE);	// Because the clock has just powered up, we have no idea what time the hands are on yet, so we need to calibrate first.
 	}
 	else
 	{
@@ -51,7 +50,7 @@ void setup()
 
 		wiFiNetwork.connectAsAccessPoint("Klok");
 		mdns.initialize("klok.local", wiFiNetwork.getLocalIPAddress());
-		webServer.initialize(onConfigurationDataReceived, onControlDataReceived, onResetRequested, scannedNetworks, scannedNetworksLength);
+		webServer.initialize(onConfigurationDataReceived, onControlDataReceived, onResetRequested, onCalibrationDataReceived, scannedNetworks, scannedNetworksLength);
 		webServer.setPageToServe(Bas::WebServer::page::CONFIGURATION_PAGE);
 	}
 }
@@ -74,10 +73,18 @@ void onConfigurationDataReceived(const char* ssid, const char* password, uint8_t
 	configuration.save();
 }
 
+void onCalibrationDataReceived(uint8_t hours, uint8_t minutes)
+{
+	Serial.print("Calibration data received.");
+	// clock.calibrate(hours, minutes);
+}
+
 void onControlDataReceived()
 {
 
 }
+
+
 
 void onConnectionFailure()
 {
