@@ -176,7 +176,7 @@ void Bas::WebServer::handleConfigurationData(char* body)
 	default:
 		encryptionType = Bas::NetworkInfo::NONE;
 		break;
-	}
+	}	
 
 	this->onConfigurationDataReceivedCallback(ssid, password, atoi(keyIndex), encryptionType, domainName);
 }
@@ -245,15 +245,16 @@ Bas::WebServer::WebServer()
 {
 }
 
-void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback)
+void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback)
 {
 	this->onConfigurationDataReceivedCallback = onConfigurationDataReceivedCallback;
 	this->onControlDataReceivedCallback = onControlDataReceivedCallback;
+	this->requestResetCallback = requestResetCallback;
 	
 	server.begin();
 }
 
-void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength)
+void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength)
 {
 	this->scannedNetworksLength = scannedNetworksLength;
 	for (size_t i = 0; i < this->scannedNetworksLength; i++)
@@ -261,14 +262,13 @@ void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfi
 		this->scannedNetworks[i] = Bas::NetworkInfo{ scannedNetworks[i] };
 	}
 
-	initialize(onConfigurationDataReceivedCallback, onControlDataReceivedCallback);
+	initialize(onConfigurationDataReceivedCallback, onControlDataReceivedCallback, requestResetCallback);
 }
 
 void Bas::WebServer::update()
 {
 	if (!server.status())
-	{
-		Serial.println("DUS TOCH!!!!");
+	{		
 		server.begin();
 	}
 
@@ -288,7 +288,7 @@ void Bas::WebServer::update()
 
 		switch (pageToServe)
 		{
-		case Bas::WebServer::page::CONFIGURATION_PAGE:
+		case CONFIGURATION_PAGE:
 
 			if (method == POST)
 			{
@@ -307,7 +307,7 @@ void Bas::WebServer::update()
 				client.print(config_html2);
 			}
 			break;
-		case Bas::WebServer::page::CONTROL_PAGE:
+		case CONTROL_PAGE:
 		default:
 			client.print("hello world");
 			break;
@@ -315,6 +315,12 @@ void Bas::WebServer::update()
 
 		client.println();
 		client.stop();
+
+		if (method == POST && pageToServe == CONFIGURATION_PAGE)
+		{
+			// Configuration data has been posted so we need to reset the arduino.
+			requestResetCallback();
+		}
 	}
 }
 

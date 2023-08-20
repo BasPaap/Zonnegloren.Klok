@@ -22,10 +22,11 @@ void setup()
 	configuration.initialize();
 		
 	if (configuration.isAvailable())
-	{	
+	{			
 		wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword(), configuration.getKeyIndex(), configuration.getEncryptionType());
 		mdns.initialize(configuration.getDeviceDomainName(), wiFiNetwork.getLocalIPAddress());
-		webServer.initialize(onConfigurationDataReceived, onControlDataReceived);
+		webServer.initialize(onConfigurationDataReceived, onControlDataReceived, onResetRequested);
+		webServer.setPageToServe(Bas::WebServer::page::CONTROL_PAGE);
 	}
 	else
 	{
@@ -44,7 +45,7 @@ void setup()
 
 		wiFiNetwork.connectAsAccessPoint("Klok");
 		mdns.initialize("klok.local", wiFiNetwork.getLocalIPAddress());
-		webServer.initialize(onConfigurationDataReceived, onControlDataReceived, scannedNetworks, scannedNetworksLength);
+		webServer.initialize(onConfigurationDataReceived, onControlDataReceived, onResetRequested, scannedNetworks, scannedNetworksLength);
 		webServer.setPageToServe(Bas::WebServer::page::CONFIGURATION_PAGE);
 	}
 }
@@ -69,4 +70,11 @@ void onConfigurationDataReceived(const char* ssid, const char* password, uint8_t
 void onControlDataReceived()
 {
 
+}
+
+void onResetRequested()
+{
+	Serial.println("Resetting arduino.");
+	delay(1000);
+	asm volatile ("jmp 0x7800");
 }

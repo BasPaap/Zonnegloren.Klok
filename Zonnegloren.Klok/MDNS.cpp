@@ -9,6 +9,12 @@ void Bas::Mdns::initialize(char domainName[], IPAddress localIPAddress)
 {
 	deviceDomainName = domainName;
 	this->localIPAddress = localIPAddress;
+
+	Serial.print("Starting as ");
+	Serial.print(deviceDomainName);
+	Serial.print(" on ");
+	Serial.println(this->localIPAddress);
+
 	udp.beginMulticast(MDNS_ADDRESS, MDNS_PORT);
 }
 

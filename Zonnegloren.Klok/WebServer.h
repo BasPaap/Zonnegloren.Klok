@@ -19,6 +19,7 @@ namespace Bas
 	{
 		using ConfigurationDataReceivedCallbackPointer = void(*)(const char* ssid, const char* password, uint8_t keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName);
 		using ControlDataReceivedCallbackPointer = void(*)();
+		using RequestResetCallbackPointer = void(*)();
 	public:
 		typedef enum { CONFIGURATION_PAGE, CONTROL_PAGE } page;
 		typedef enum { UNKNOWN, GET, POST, PUT, PATCH, DELETE } httpMethod;
@@ -33,6 +34,7 @@ namespace Bas
 		int scannedNetworksLength = 0;
 		ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback;
 		ControlDataReceivedCallbackPointer onControlDataReceivedCallback;
+		RequestResetCallbackPointer requestResetCallback;
 
 		void printWiFiOption(WiFiClient& client, const char* ssid, int32_t rssi, Bas::NetworkInfo::encryptionType_t encryptionType);
 		httpMethod getHttpMethod(WiFiClient& client);
@@ -44,8 +46,8 @@ namespace Bas
 
 	public:
 		WebServer();
-		void initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback);
-		void initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength);
+		void initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback);
+		void initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength);
 		void update();
 		void setPageToServe(page pageToServe);
 	};

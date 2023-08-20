@@ -50,11 +50,6 @@ uint8_t Bas::Configuration::hash(uint8_t value, int salt)
 	return value ^ (HASH_VALUE + salt);
 }
 
-void Bas::Configuration::resetArduino() 
-{
-	asm volatile ("jmp 0x7800");
-}
-
 void Bas::Configuration::initialize()
 {
 	int ssidAddress = 0;
@@ -134,16 +129,14 @@ void Bas::Configuration::save()
 	}	
 }
 
-void Bas::Configuration::reset()
+void Bas::Configuration::clear()
 {
 	for (size_t i = 0; i < EEPROM.length(); i++)
 	{
 		EEPROM.put(i, 0);
 	}
-
-	// Reset the arduino
-	Serial.println("Configuration cleared, resetting arduino.");	
-	resetArduino();
+	
+	Serial.println("Configuration cleared.");
 }
 
 char* Bas::Configuration::getSsid()

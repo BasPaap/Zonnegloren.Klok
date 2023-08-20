@@ -35,13 +35,12 @@ namespace Bas
 		void writeValue(int address, char* value);
 		void writeValue(int address, char* value, size_t length);
 		uint8_t hash(uint8_t value, int salt);
-		void resetArduino();
 
 	public:
 		void initialize();
 		bool isAvailable();
 		void save();
-		void reset();
+		void clear();
 
 		char* getSsid();
 		void setSsid(const char* ssid);
