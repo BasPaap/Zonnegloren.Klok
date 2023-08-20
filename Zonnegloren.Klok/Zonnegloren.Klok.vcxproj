@@ -121,21 +121,21 @@
   <ItemGroup>
     <None Include="klok-config.html" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="First-Calibration-HTML.cpp" />
+    <ClCompile Include="HtmlPage.cpp" />
     <ClCompile Include="Zonnegloren.Klok.ino">
       <FileType>CppCode</FileType>
       <DeploymentContent>true</DeploymentContent>
     </ClCompile>
     <None Include="klok-confirm-config.html" />
     <None Include="klok-control.html" />
-    <None Include="klok-first-calibration.html" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
-    <ClInclude Include="Config-HTML.h" />
+    <ClInclude Include="Config-HTML.cpp" />
     <ClInclude Include="Configuration.h" />
-    <ClInclude Include="Confirm-Config-HTML.h" />
-    <ClInclude Include="Control-HTML.h" />
-    <ClInclude Include="First-Calibration-HTML.h" />
+    <ClInclude Include="Confirm-Config-HTML.cpp" />
+    <ClInclude Include="Control-HTML.cpp" />
     <ClInclude Include="Mdns.h" />
     <ClInclude Include="MdnsHeader.h" />
     <ClInclude Include="NetworkInfo.h" />

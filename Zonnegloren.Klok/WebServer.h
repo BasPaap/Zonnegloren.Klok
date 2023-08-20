@@ -44,7 +44,13 @@ namespace Bas
 		RequestResetCallbackPointer requestResetCallback;
 		CalibrationDataReceivedCallbackPointer calibrationDataReceivedCallback;
 
+		void printPageHeader(WiFiClient& client, const char* title);
+		void printPageFooter(WiFiClient& client);
 		void printWiFiOption(WiFiClient& client, const char* ssid, int32_t rssi, Bas::NetworkInfo::encryptionType_t encryptionType);
+		void printConfigurationPage(WiFiClient& client);
+		void printConfirmConfigurationPage(WiFiClient& client, const char* ssid, const char* domainName);
+		void printFirstCalibrationPage(WiFiClient& client);
+		void printControlPage(WiFiClient& client, IPAddress localIpAddress, uint8_t hours, uint8_t minutes, float speed, uint8_t startHours, uint8_t startMinutes, float startSpeed, uint8_t endHours, uint8_t endMinutes, float endSpeed);
 		httpMethod getHttpMethod(WiFiClient& client);
 		int getRequestBody(WiFiClient& client, char* body);
 		void parseConfigurationData(char* body, char* ssid, char* password, char* domainName, Bas::NetworkInfo::encryptionType_t* encryptionType, uint8_t* keyIndex);

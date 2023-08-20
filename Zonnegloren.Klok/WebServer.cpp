@@ -3,52 +3,7 @@
 // 
 
 #include "WebServer.h"
-#include "Config-HTML.h"
-#include "Confirm-Config-HTML.h"
-#include "First-Calibration-HTML.h"
-#include "Control-HTML.h"
 #include "NetworkInfo.h"
-
-void Bas::WebServer::printWiFiOption(WiFiClient& client, const char* ssid, int32_t rssi, Bas::NetworkInfo::encryptionType_t encryptionType)
-{
-	client.print("<option value=\"");
-	client.print(ssid);
-	client.print("\" data-encryption=\"");
-
-	switch (encryptionType)
-	{
-	case Bas::NetworkInfo::encryptionType_t::WPA:
-		client.print("WPA");
-		break;
-	case Bas::NetworkInfo::encryptionType_t::WEP:
-		client.print("WEP");
-		break;
-	case Bas::NetworkInfo::encryptionType_t::NONE:
-	default:
-		client.print("none");
-		break;
-	}
-
-	client.print("\">");
-	client.print(ssid);
-	client.print(" (");
-
-	switch (encryptionType)
-	{
-	case Bas::NetworkInfo::encryptionType_t::WPA:
-		client.print("WPA");
-		break;
-	case Bas::NetworkInfo::encryptionType_t::WEP:
-		client.print("WEP");
-		break;
-	case Bas::NetworkInfo::encryptionType_t::NONE:
-	default:
-		client.print("public");
-		break;
-	}
-
-	client.print(")</option>");
-}
 
 Bas::WebServer::httpMethod Bas::WebServer::getHttpMethod(WiFiClient& client)
 {
@@ -292,31 +247,18 @@ void Bas::WebServer::update()
 				uint8_t keyIndex;
 				
 				parseConfigurationData(body, ssid, password, domainName, &encryptionType, &keyIndex);
-				
-				client.print(confirm_config_html1);
-				client.print(ssid);
-				client.print(confirm_config_html2);
-				client.print(domainName);
-				client.print(confirm_config_html3);
-
+				printConfirmConfigurationPage(client, ssid, domainName);
 				this->onConfigurationDataReceivedCallback(ssid, password, keyIndex, encryptionType, strlwr(domainName));
 			}
 			else
 			{
-				client.print(config_html1);
-
-				for (size_t i = 0; i < scannedNetworksLength; i++)
-				{
-					printWiFiOption(client, scannedNetworks[i].ssid, scannedNetworks[i].rssi, scannedNetworks[i].encryptionType);
-				}
-
-				client.print(config_html2);
+				printConfigurationPage(client);
 			}
 			break;
 		case FIRST_CALIBRATION_PAGE:
 			if (method != POST)
 			{
-				client.print(first_calibration_html);
+				printFirstCalibrationPage(client);
 				break;
 			}
 			else
@@ -328,7 +270,7 @@ void Bas::WebServer::update()
 			}			
 		case CONTROL_PAGE:			
 		default:
-			client.print(control_html);
+			printControlPage(client, IPAddress{ 127,0,0,1 }, 0, 0, 1, 0, 0, 1, 0, 0, 1);
 			break;
 		}
 
