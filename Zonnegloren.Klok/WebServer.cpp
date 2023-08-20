@@ -148,7 +148,7 @@ void Bas::WebServer::handleConfigurationData(char* body)
 		}
 		else if (startswith(token, DOMAIN_NAME_TOKEN))
 		{
-			urlDecode(token + strlen(DOMAIN_NAME_TOKEN), domainName);
+			urlDecode(token + strlen(DOMAIN_NAME_TOKEN), domainName);			
 		}
 		else if (startswith(token, ENCRYPTION_TYPE_TOKEN))
 		{
@@ -177,8 +177,8 @@ void Bas::WebServer::handleConfigurationData(char* body)
 		encryptionType = Bas::NetworkInfo::NONE;
 		break;
 	}	
-
-	this->onConfigurationDataReceivedCallback(ssid, password, atoi(keyIndex), encryptionType, domainName);
+	
+	this->onConfigurationDataReceivedCallback(ssid, password, atoi(keyIndex), encryptionType, strlwr(domainName));
 }
 
 void Bas::WebServer::urlDecode(const char* input, char* output)
