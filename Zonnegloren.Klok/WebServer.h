@@ -17,7 +17,7 @@ namespace Bas
 {
 	class WebServer
 	{
-		using ConfigurationDataReceivedCallbackPointer = void(*)(const char* ssid, const char* password, int keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName);
+		using ConfigurationDataReceivedCallbackPointer = void(*)(const char* ssid, const char* password, uint8_t keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName);
 		using ControlDataReceivedCallbackPointer = void(*)();
 	public:
 		typedef enum { CONFIGURATION_PAGE, CONTROL_PAGE } page;

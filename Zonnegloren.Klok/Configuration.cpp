@@ -35,7 +35,7 @@ void Bas::Configuration::writeValue(int address, char* value)
 
 void Bas::Configuration::writeValue(int address, char* value, size_t valueLength)
 {	
-	EEPROM.write(address, valueLength);
+	EEPROM.update(address, valueLength);
 	
 	for (size_t i = 0; i < valueLength; i++)
 	{
@@ -68,9 +68,16 @@ void Bas::Configuration::initialize()
 	{
 		return;
 	}
-
-	int keyIndexAddress = passwordAddress + strlen(this->password) + 1;
+	
+	int domainNameAddress = passwordAddress + strlen(password) + 1;
+	if (!readValue(domainNameAddress, MAX_DOMAIN_NAME_LENGTH, this->deviceDomainName))
+	{
+		return;
+	}
+	
+	int keyIndexAddress = domainNameAddress + strlen(deviceDomainName) + 1;
 	this->keyIndex = EEPROM.read(keyIndexAddress);
+	
 	int encryptionTypeAddress = keyIndexAddress + MAX_KEY_INDEX_LENGTH;
 	switch (EEPROM.read(encryptionTypeAddress))
 	{
@@ -85,13 +92,7 @@ void Bas::Configuration::initialize()
 		this->encryptionType = Bas::NetworkInfo::NONE;
 		break;
 	}
-
-	int domainNameAddress = encryptionTypeAddress + MAX_ENCRYPTION_TYPE_LENGTH + 1;
-	if (!readValue(domainNameAddress, MAX_DOMAIN_NAME_LENGTH, this->deviceDomainName))
-	{
-		return;
-	}
-
+	
 	int domainNameLength = strlen(this->deviceDomainName);
 	this->deviceDomainName[domainNameLength] = '.';
 	this->deviceDomainName[domainNameLength + 1] = 'l';
@@ -100,15 +101,8 @@ void Bas::Configuration::initialize()
 	this->deviceDomainName[domainNameLength + 4] = 'a';
 	this->deviceDomainName[domainNameLength + 5] = 'l';
 	this->deviceDomainName[domainNameLength + 6] = 0;
-
-	this->areValuesFound = true;
-
-	Serial.println("From EEPROM:");
-	Serial.println(this->ssid);
-	Serial.println(this->password);
-	Serial.println(this->keyIndex);
-	Serial.println(this->encryptionType);
-	Serial.println(this->deviceDomainName);
+	
+	this->areValuesFound = true;	
 }
 
 bool Bas::Configuration::isAvailable()
@@ -121,22 +115,22 @@ void Bas::Configuration::save()
 	if (strlen(this->ssid) &&
 		strlen(this->password) &&
 		strlen(this->deviceDomainName))
-	{
+	{		
 		// Encrypt the configuration values and write them to non-volatile memory.
 		int ssidAddress = 0;
 		writeValue(ssidAddress, this->ssid);
 		
 		int passwordAddress = ssidAddress + strlen(this->ssid) + 1;
 		writeValue(passwordAddress, this->password);
-
-		int keyIndexAddress = passwordAddress + strlen(this->password) + 1;
+		
+		int domainNameAddress = passwordAddress + strlen(this->password) + 1;
+		writeValue(domainNameAddress, this->deviceDomainName, strlen(this->deviceDomainName) - strlen(DOMAIN_NAME_TLD));
+		
+		int keyIndexAddress = domainNameAddress + strlen(this->deviceDomainName) - strlen(DOMAIN_NAME_TLD) + 1;
 		EEPROM.put(keyIndexAddress, this->keyIndex);
-
-		int encryptionTypeAddress = keyIndexAddress + 1;
-		EEPROM.put(encryptionTypeAddress, this->encryptionType);
-
-		int domainNameAddress = encryptionTypeAddress + 1;
-		writeValue(domainNameAddress, this->deviceDomainName, strlen(this->deviceDomainName) - 6);
+		
+		int encryptionTypeAddress = keyIndexAddress + MAX_KEY_INDEX_LENGTH;
+		EEPROM.put(encryptionTypeAddress, this->encryptionType);		
 	}	
 }
 
@@ -148,7 +142,7 @@ void Bas::Configuration::reset()
 	}
 
 	// Reset the arduino
-	Serial.println("Configuration cleared, resetting arduino.");
+	Serial.println("Configuration cleared, resetting arduino.");	
 	resetArduino();
 }
 
@@ -180,14 +174,24 @@ char* Bas::Configuration::getDeviceDomainName()
 void Bas::Configuration::setDeviceDomainName(const char* deviceDomainName)
 {
 	strcpy(this->deviceDomainName, deviceDomainName);
+		
+	// Ensure that the domain name ends in .local
+	if (strlen(deviceDomainName) < strlen(DOMAIN_NAME_TLD + 1)) // The domain name should be at least 7 characters: a.local		
+	{
+		strcat(this->deviceDomainName, DOMAIN_NAME_TLD);
+	}
+	else if (strcmp(DOMAIN_NAME_TLD, this->deviceDomainName + (strlen(this->deviceDomainName) - 6)) != 0)
+	{		
+		strcat(this->deviceDomainName, DOMAIN_NAME_TLD);
+	}
 }
 
-int8_t Bas::Configuration::getKeyIndex()
+uint8_t Bas::Configuration::getKeyIndex()
 {
 	return keyIndex;
 }
 
-void Bas::Configuration::setKeyIndex(int8_t keyIndex)
+void Bas::Configuration::setKeyIndex(uint8_t keyIndex)
 {
 	this->keyIndex = keyIndex;
 }

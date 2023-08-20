@@ -21,7 +21,7 @@ namespace Bas
 		void printWiFiClientStatus();
 	public:
 		void connectAsAccessPoint(const char* ssid);
-		void connectAsClient(const char* ssid, const char* password);		
+		void connectAsClient(const char* ssid, const char* password, uint8_t keyIndex, Bas::NetworkInfo::encryptionType_t encryptionType);
 		bool isClient();
 		IPAddress getLocalIPAddress();
 		void update();		

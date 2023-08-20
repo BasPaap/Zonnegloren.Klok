@@ -9,6 +9,8 @@
 	#include "WProgram.h"
 #endif
 
+#include "NetworkInfo.h"
+
 namespace Bas
 {
 	class Configuration
@@ -20,12 +22,13 @@ namespace Bas
 		static const int MAX_ENCRYPTION_TYPE_LENGTH = 1;
 
 		static const char HASH_VALUE = 'B';
+		const char* DOMAIN_NAME_TLD = ".local";
 
 		char ssid[MAX_SSID_LENGTH + 1];
 		char password[MAX_PASSWORD_LENGTH + 1];
 		char deviceDomainName[MAX_DOMAIN_NAME_LENGTH + 1];
 		Bas::NetworkInfo::encryptionType_t encryptionType;
-		int8_t keyIndex;
+		uint8_t keyIndex;
 
 		bool areValuesFound;
 		bool readValue(int address, int maxLength, char* value);
@@ -46,8 +49,8 @@ namespace Bas
 		void setPassword(const char* password);
 		char* getDeviceDomainName();
 		void setDeviceDomainName(const char* deviceDomainName);
-		int8_t getKeyIndex();
-		void setKeyIndex(int8_t keyIndex);
+		uint8_t getKeyIndex();
+		void setKeyIndex(uint8_t keyIndex);
 		Bas::NetworkInfo::encryptionType_t getEncryptionType();
 		void setEncryptionType(Bas::NetworkInfo::encryptionType_t encryptionType);
 	};

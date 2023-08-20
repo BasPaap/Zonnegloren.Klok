@@ -6,6 +6,7 @@
 #include "Mdns.h"
 #include "WebServer.h"
 #include "Configuration.h"
+#include <EEPROM.h>
 
 Bas::Configuration configuration;
 Bas::WiFiNetwork wiFiNetwork;
@@ -17,12 +18,12 @@ void setup()
 	//Initialize serial and wait for port to open:
 	Serial.begin(9600);
 	while (!Serial);  // wait for serial port to connect. Needed for native USB port only
-
+		
 	configuration.initialize();
-
+		
 	if (configuration.isAvailable())
-	{
-		wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword());
+	{		
+		wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword(), configuration.getKeyIndex(), configuration.getEncryptionType());
 		mdns.initialize(configuration.getDeviceDomainName(), wiFiNetwork.getLocalIPAddress());
 		webServer.initialize(onConfigurationDataReceived, onControlDataReceived);
 	}
@@ -59,17 +60,14 @@ void loop()
 	webServer.update();
 }
 
-void onConfigurationDataReceived(const char* ssid, const char* password, int keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName)
+void onConfigurationDataReceived(const char* ssid, const char* password, uint8_t keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName)
 {
-	Serial.print(ssid);
-	Serial.print(" - ");
-	Serial.print(password);
-	Serial.print(" - ");
-	Serial.print(keyIndex);
-	Serial.print(" - ");
-	Serial.print(encryptionType);
-	Serial.print(" - ");
-	Serial.print(domainName);
+	configuration.setSsid(ssid);
+	configuration.setPassword(password);
+	configuration.setKeyIndex(keyIndex);
+	configuration.setEncryptionType(encryptionType);
+	configuration.setDeviceDomainName(domainName);
+	configuration.save();
 }
 
 void onControlDataReceived()

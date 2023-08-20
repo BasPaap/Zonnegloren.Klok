@@ -16,14 +16,27 @@ void Bas::WiFiNetwork::connectAsAccessPoint(const char* ssid)
 	delay(2000);
 }
 
-void Bas::WiFiNetwork::connectAsClient(const char* ssid, const char* password)
+void Bas::WiFiNetwork::connectAsClient(const char* ssid, const char* password, uint8_t keyIndex, Bas::NetworkInfo::encryptionType_t encryptionType)
 {
 	while (wiFiStatus != WL_CONNECTED)
 	{
 		Serial.print("Attempting to connect to SSID: ");
 		Serial.println(ssid);
 		
-		wiFiStatus = WiFi.begin(ssid, password); // Connect to WPA/WPA2 network.
+		switch (encryptionType)
+		{
+		case Bas::NetworkInfo::WPA:
+			wiFiStatus = WiFi.begin(ssid, password); // Connect to WPA/WPA2 network.
+			break;
+		case Bas::NetworkInfo::WEP:
+			wiFiStatus = WiFi.begin(ssid, keyIndex, password); // Connect to WEP network.
+			break;
+		case Bas::NetworkInfo::NONE:
+		default:
+			wiFiStatus = WiFi.begin(ssid); // Connect to public network
+			break;
+		}
+		
 		delay(2000); // wait 2 seconds for connection:
 	}
 
