@@ -81,7 +81,7 @@
         <fieldset>
             <legend>Tijd</legend>
             <input type="time" id="time" name="time" value="04:20">
-            <button name="submit" value="Submit" type="submit">Tijd aanpassen</button>
+            <button name="submit" value="timeForm" type="submit">Tijd aanpassen</button>
         </fieldset>
     </form>
 
@@ -89,7 +89,7 @@
         <fieldset>
             <legend>Snelheid</legend>
             <input type="number" id="speed" name="speed" class="speed" value="1">
-            <button name="submit" value="Submit" type="submit">Snelheid aanpassen</button>
+            <button name="submit" value="speedForm" type="submit">Snelheid aanpassen</button>
             <p class="explanation">Het aantal seconden per seconde, mag negatief zijn. 1 = normaal, -1 is normaal maar achteruit, 0.5 is half zo snel als normaal, enzovoort.</p>
             <p class="explanation">Deze snelheid wordt niet gebruikt als een variabele snelheid (zie hieronder) actief is!</p>
         </fieldset>
@@ -107,8 +107,7 @@
                 <input type="number" id="startSpeed" name="startSpeed" class="speed" value="1" title="startsnelheid" placeholder="1">
                 naar
                 <input type="number" id="endSpeed" name="endSpeed" class="speed" value="0.5" title="eindsnelheid" placeholder="0.5">.
-                <input type="hidden" name="_method" value="PUT">
-                <button name="submit" value="Submit" type="submit">Snelheid aanpassen</button>
+                <button name="submit" value="variableSpeedForm" type="submit">Snelheid aanpassen</button>
             </p>
         </fieldset>
     </form>
@@ -118,7 +117,8 @@
             <legend>Kalibratie</legend>
             <label for="calibrationTime" class="explanation">Vul de tijd in die de klok nu weergeeft:</label>
             <input type="time" id="calibrationTime" name="calibrationTime" value="04:20" />
-            <button name="submit" value="Submit" type="submit">Kalibreren</button>
+            <button name="submit" value="calibrationForm" type="submit">Kalibreren</button>
+            <p class="explanation">Als de klok niet de verwachte tijd aangeeft moet hij mogelijk gekalibreerd worden. Vul de tijd in die de wijzers op dit moment aangeven en klik op "Kalibreren".</p>
         </fieldset>
     </form>
 </body>

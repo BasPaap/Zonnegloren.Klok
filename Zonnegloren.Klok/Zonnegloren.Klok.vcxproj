@@ -126,6 +126,7 @@
       <DeploymentContent>true</DeploymentContent>
     </ClCompile>
     <None Include="klok-confirm-config.html" />
+    <None Include="klok-control.html" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
