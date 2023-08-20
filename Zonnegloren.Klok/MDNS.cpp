@@ -49,7 +49,7 @@ void Bas::Mdns::handleMdnsPacket(const unsigned char packetBuffer[], int packetB
 
 		for (size_t i = 0; i < mdnsHeader.getNumQuestions(); i++)
 		{
-			if (packetBuffer[questionByteIndex] > MAX_LABEL_LENGTH && !isCompressionLabelCharacter(packetBuffer[questionByteIndex]))
+			if (packetBuffer[questionByteIndex] > MAX_LABEL_LENGTH && packetBuffer[questionByteIndex] >> 6 != 0b11) // If the label is larger than the possible length and this is not a compression label, ignore the rest because something is messed up.
 			{
 				Serial.println("Incorrect label length, ignoring the rest of the message.");
 				break;
@@ -63,11 +63,6 @@ void Bas::Mdns::handleMdnsPacket(const unsigned char packetBuffer[], int packetB
 			}
 		}
 	}
-}
-
-bool Bas::Mdns::isCompressionLabelCharacter(const char character)
-{
-	return character >> 6 != 0b11;  // If the first two bits are set, then this is a compression label.
 }
 
 /// <summary>
@@ -94,8 +89,8 @@ int Bas::Mdns::handleMdnsQuestion(const unsigned char packetBuffer[], int packet
 	getRequestedDomainName(packetBuffer, questionFirstByteIndex, domainName, &domainNameFieldLength);
 	uint16_t queryType = packetBuffer[questionFirstByteIndex + domainNameFieldLength] << 8 | packetBuffer[questionFirstByteIndex + domainNameFieldLength + 1];
 
-	char queryTypeName[10];
-	getQueryTypeName(queryType, queryTypeName);
+	Serial.print("\tMDNS: ");
+	const char* queryTypeName = getQueryTypeName(queryType);
 	Serial.print(queryTypeName);
 	Serial.print(" type query received for ");
 	Serial.println(domainName);
@@ -165,7 +160,7 @@ int Bas::Mdns::handleMdnsQuestion(const unsigned char packetBuffer[], int packet
 			IPAddress destinationAddress = isUnicast ? udp.remoteIP() : MDNS_ADDRESS;
 			uint16_t destinationPort = isUnicast ? udp.remotePort() : MDNS_PORT;
 
-			Serial.print("Sending response to ");
+			Serial.print("\tSending response to ");
 			Serial.println(destinationAddress);
 
 			udp.beginPacket(destinationAddress, destinationPort);
@@ -187,13 +182,12 @@ void Bas::Mdns::getRequestedDomainName(const unsigned char packetBuffer[], uint1
 	bool isTerminatedByCompressionLabel = false;
 
 	domainName[0] = 0;
-
-	int iteration = 0;
+		
 	do
 	{
 		domainNameLabel[0] = 0;
 		getDomainNameLabel(packetBuffer, currentDomainNameLabelByteIndex, domainNameLabel, &domainNameLabelFieldLength, &nextDomainNameLabelByteIndex, &isTerminatedByCompressionLabel);
-				
+		
 		// Append the label to the domain name we have so far, with a period as a separator.
 		strcat(domainName, domainNameLabel);
 		strcat(domainName, ".");
@@ -224,8 +218,8 @@ void Bas::Mdns::getRequestedDomainName(const unsigned char packetBuffer[], uint1
 void Bas::Mdns::getDomainNameLabel(const unsigned char packetBuffer[], uint16_t labelFirstByteIndex, char domainNameLabel[], uint8_t* pDomainNameLabelFieldLength, uint16_t* pNextDomainNameLabelByteIndex, bool* pIsTerminatedByCompressionLabel)
 {
 	uint16_t currentLabelByteIndex = labelFirstByteIndex;
-
-	if (isCompressionLabelCharacter(packetBuffer[currentLabelByteIndex]))
+	
+	if (packetBuffer[currentLabelByteIndex] >> 6 == 0b11) // If the first two bits are set, then this is a compression label.
 	{
 		// No label bytes or terminator byte will follow after the compression label, so we can tell our calling member that this ends the bytes used for the label in this message.
 		*pIsTerminatedByCompressionLabel = true;
@@ -235,7 +229,7 @@ void Bas::Mdns::getDomainNameLabel(const unsigned char packetBuffer[], uint16_t 
 	}
 
 	uint8_t labelLength = packetBuffer[currentLabelByteIndex];
-
+	
 	for (size_t i = 0; i < labelLength; i++)
 	{
 		domainNameLabel[i] = packetBuffer[currentLabelByteIndex + 1 + i];
@@ -248,23 +242,20 @@ void Bas::Mdns::getDomainNameLabel(const unsigned char packetBuffer[], uint16_t 
 	*pNextDomainNameLabelByteIndex = currentLabelByteIndex + *pDomainNameLabelFieldLength;
 }
 
-void Bas::Mdns::getQueryTypeName(uint16_t queryType, char queryTypeName[])
+const char* Bas::Mdns::getQueryTypeName(uint16_t queryType)
 {
 	switch (queryType)
 	{
 	case QUERY_TYPE_A:
-		queryTypeName = "A";
-		break;
+		return "A";
 
 	case QUERY_TYPE_HTTPS:
-		queryTypeName = "HTTPS";
-		break;
+		return "HTTPS";
 
 	default:
-		char queryTypeNumber[10];
-		itoa(queryType, queryTypeNumber, 10);
-		queryTypeName = strcat(queryTypeNumber, " (other)");
-		break;
+		char queryTypeName[10];
+		itoa(queryType, queryTypeName, 10);
+		return strcat(queryTypeName, " (other)");
 	}
 }
 
