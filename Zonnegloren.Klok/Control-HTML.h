@@ -1,4 +1,5 @@
-﻿"<!DOCTYPE html>\n"\
+#pragma once
+const char* control_html = "<!DOCTYPE html>\n"\
 "\n"\
 "<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\">\n"\
 "<head>\n"\
@@ -122,4 +123,4 @@
 "        </fieldset>\n"\
 "    </form>\n"\
 "</body>\n"\
-"</html>
+"</html>";

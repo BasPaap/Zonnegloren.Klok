@@ -6,6 +6,7 @@
 #include "Config-HTML.h"
 #include "Confirm-Config-HTML.h"
 #include "First-Calibration-HTML.h"
+#include "Control-HTML.h"
 #include "NetworkInfo.h"
 
 void Bas::WebServer::printWiFiOption(WiFiClient& client, const char* ssid, int32_t rssi, Bas::NetworkInfo::encryptionType_t encryptionType)
@@ -327,7 +328,7 @@ void Bas::WebServer::update()
 			}			
 		case CONTROL_PAGE:			
 		default:
-			client.print("hello world");
+			client.print(control_html);
 			break;
 		}
 
