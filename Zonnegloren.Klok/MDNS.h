@@ -38,7 +38,7 @@ namespace Bas
 		void uint32ToByteArray(uint32_t value, uint8_t* byteArray);
 
 	public:
-		void initialize(char domainName[], IPAddress localIPAddress);
+		void begin(char domainName[], IPAddress localIPAddress);
 		void update();
 	};
 }

@@ -5,7 +5,7 @@
 #include "MDNS.h"
 #include "MdnsHeader.h"
 
-void Bas::Mdns::initialize(char domainName[], IPAddress localIPAddress)
+void Bas::Mdns::begin(char domainName[], IPAddress localIPAddress)
 {
 	deviceDomainName = domainName;
 	this->localIPAddress = localIPAddress;

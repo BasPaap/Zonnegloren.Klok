@@ -192,7 +192,7 @@ Bas::WebServer::WebServer()
 {
 }
 
-void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback)
+void Bas::WebServer::begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback)
 {
 	this->onConfigurationDataReceivedCallback = onConfigurationDataReceivedCallback;
 	this->onControlDataReceivedCallback = onControlDataReceivedCallback;
@@ -202,7 +202,7 @@ void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfi
 	server.begin();
 }
 
-void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength)
+void Bas::WebServer::begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength)
 {
 	this->scannedNetworksLength = scannedNetworksLength;
 	for (size_t i = 0; i < this->scannedNetworksLength; i++)
@@ -210,7 +210,7 @@ void Bas::WebServer::initialize(ConfigurationDataReceivedCallbackPointer onConfi
 		this->scannedNetworks[i] = Bas::NetworkInfo{ scannedNetworks[i] };
 	}
 
-	initialize(onConfigurationDataReceivedCallback, onControlDataReceivedCallback, requestResetCallback, onCalibrationDataReceivedCallback);
+	begin(onConfigurationDataReceivedCallback, onControlDataReceivedCallback, requestResetCallback, onCalibrationDataReceivedCallback);
 }
 
 void Bas::WebServer::update()

@@ -6,12 +6,12 @@ namespace Bas
 	{
 	}
 
-	void Button::initialize(CallbackPointer fallingCallback)
+	void Button::begin(CallbackPointer fallingCallback)
 	{
-		this->initialize(fallingCallback, NULL);
+		this->begin(fallingCallback, NULL);
 	}
 
-	void Button::initialize(CallbackPointer fallingCallback, CallbackPointer risingCallback)
+	void Button::begin(CallbackPointer fallingCallback, CallbackPointer risingCallback)
 	{
 		Serial.print("Initializing button on pin ");
 		Serial.println(this->pin);

@@ -50,7 +50,7 @@ uint8_t Bas::Configuration::hash(uint8_t value, int salt)
 	return value ^ (HASH_VALUE + salt);
 }
 
-void Bas::Configuration::initialize()
+void Bas::Configuration::begin()
 {
 	int ssidAddress = 0;
 	if (!readValue(ssidAddress, MAX_SSID_LENGTH, this->ssid))

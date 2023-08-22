@@ -37,14 +37,14 @@ namespace Bas
 		/// Tell the button which callback to call when the signal falls (in other words, when the button is pressed).
 		/// </summary>
 		/// <param name="fallingCallback">The callback to call when the button is pressed.</param>
-		void initialize(CallbackPointer fallingCallback);
+		void begin(CallbackPointer fallingCallback);
 
 		/// <summary>
 		/// Tell the button which callback to call when the signal falls (when the button is pressed) or rises (when the button is released).
 		/// </summary>
 		/// <param name="fallingCallback">The callback to call when the button is pressed.</param>
 		/// <param name="risingCallback">The callback to call when the button is released.</param>
-		void initialize(CallbackPointer fallingCallback, CallbackPointer risingCallback);
+		void begin(CallbackPointer fallingCallback, CallbackPointer risingCallback);
 
 		/// <summary>
 		/// Updates the Button state. This method should be called once per loop.

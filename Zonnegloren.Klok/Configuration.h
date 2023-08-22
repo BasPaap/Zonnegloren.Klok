@@ -37,7 +37,7 @@ namespace Bas
 		uint8_t hash(uint8_t value, int salt);
 
 	public:
-		void initialize();
+		void begin();
 		bool isAvailable();
 		void save();
 		void clear();
