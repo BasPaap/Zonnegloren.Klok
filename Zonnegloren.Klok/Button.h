@@ -1,4 +1,8 @@
-// Button.h
+/*
+  Button.h - Library for a debounced button that can call calllbacks on rising or falling action.
+  Created by Bas Paap, August 2023.
+  Released into the public domain.
+*/
 
 #ifndef _BUTTON_h
 #define _BUTTON_h
@@ -15,6 +19,10 @@ namespace Bas
 	/// </summary>
 	class Button
 	{
+	public:
+		enum class LogLevel { none = 0, normal };
+	
+	private:
 		using CallbackPointer = void(*)();
 		int pin;
 		int lastDebouncedButtonState = HIGH;
@@ -23,6 +31,7 @@ namespace Bas
 		CallbackPointer risingCallback;
 		CallbackPointer fallingCallback;
 		int debouncedState;
+		LogLevel logLevel;
 
 	public:
 		/// <summary>
@@ -30,8 +39,7 @@ namespace Bas
 		/// </summary>
 		/// <param name="pin">The pin the button is connected to.</param>
 		/// <param name="debounceDelay">The delay (in millis) to use for filtering any bouncing.</param>
-		/// <returns></returns>
-		Button(int pin, unsigned long debounceDelay);
+		Button(int pin, unsigned long debounceDelay, LogLevel logLevel = LogLevel::none);
 
 		/// <summary>
 		/// Tell the button which callback to call when the signal falls (in other words, when the button is pressed).
