@@ -21,7 +21,7 @@ namespace Bas
 		const int NUM_MILLISECONDS_IN_SECOND = 1000;
 				
 		DateTime time{ 0, 0 };
-		float constantSpeed = 60 * 60;
+		float constantSpeed = -3600;
 		
 		int variableSpeedStartHour;
 		int variableSpeedStartMinute;

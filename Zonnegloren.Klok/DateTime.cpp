@@ -2,35 +2,26 @@
 
 /**************************************************************************/
 /*!
-    @brief  Constructor from
-        [Unix time](https://en.wikipedia.org/wiki/Unix_time).
-
+    @brief  Constructor from number of seconds since 00:00:00
+        
     This builds a DateTime from an integer specifying the number of seconds
-    elapsed since the epoch: 1970-01-01 00:00:00. This number is analogous
-    to Unix time, with two small differences:
-
-     - The Unix epoch is specified to be at 00:00:00
-       [UTC](https://en.wikipedia.org/wiki/Coordinated_Universal_Time),
-       whereas this class has no notion of time zones. The epoch used in
-       this class is then at 00:00:00 on whatever time zone the user chooses
-       to use, ignoring changes in DST.
-
-     - Unix time is conventionally represented with signed numbers, whereas
-       this constructor takes an unsigned argument. Because of this, it does
-       _not_ suffer from the
-       [year 2038 problem](https://en.wikipedia.org/wiki/Year_2038_problem).
-
-    If called without argument, it returns the earliest time representable
-    by this class: 2000-01-01 00:00:00.
-
-    @see The `unixtime()` method is the converse of this constructor.
-
-    @param t Time elapsed in seconds since 1970-01-01 00:00:00.
+    elapsed since midnight.
+    
+    @param t Time elapsed in seconds since 00:00:00.
 */
 /**************************************************************************/
-DateTime::DateTime(uint32_t t) {
-    t -= SECONDS_FROM_1970_TO_2000; // bring to 2000 timestamp from 1970
+DateTime::DateTime(int64_t t) {
+    // If this constructor is called with a negative value t, that means we want to count back from 00:00:00. Therefore, we'll add an entire day's worth
+    // of seconds to t, which will get us the correct value.
 
+    const int64_t secondsPerDay = static_cast<int64_t>(60 * 60) * 24; // static cast because sub expression 60*60 will overflow before being cast to a wider type.
+    t = t % secondsPerDay;
+
+    if (t < 0)
+    {
+        t = secondsPerDay + t;
+    }
+    
     ss = t % 60;
     t /= 60;
     mm = t % 60;
@@ -50,7 +41,7 @@ DateTime::DateTime(uint32_t t) {
 DateTime::DateTime(uint8_t hour, uint8_t min) {    
     hh = hour;
     mm = min;
-    ss = 0;
+    ss = 0;    
 }
 
 /**************************************************************************/
@@ -77,20 +68,9 @@ uint8_t DateTime::hour() const {
     }
 }
 
-/**************************************************************************/
-/*!
-    @brief  Return Unix time: seconds since 1 Jan 1970.
 
-    @see The `DateTime::DateTime(uint32_t)` constructor is the converse of
-        this method.
-
-    @return Number of seconds since 1970-01-01 00:00:00.
-*/
-/**************************************************************************/
-uint32_t DateTime::unixtime(void) const {
-    uint32_t t = ((unsigned long)hh * 60 + mm) * 60 + ss;
-    t += SECONDS_FROM_1970_TO_2000; // seconds from 1970 to 2000
-
+int32_t DateTime::totalSeconds(void) const {
+    int32_t t = ((unsigned long)hh * 60 + mm) * 60 + ss;
     return t;
 }
 
@@ -102,7 +82,7 @@ uint32_t DateTime::unixtime(void) const {
 */
 /**************************************************************************/
 DateTime DateTime::operator+(const TimeSpan& span) {
-    return DateTime(unixtime() + span.totalseconds());
+    return DateTime(totalSeconds() + span.totalseconds());
 }
 
 /**************************************************************************/
@@ -113,7 +93,7 @@ DateTime DateTime::operator+(const TimeSpan& span) {
 */
 /**************************************************************************/
 DateTime DateTime::operator-(const TimeSpan& span) {
-    return DateTime(unixtime() - span.totalseconds());
+    return DateTime(totalSeconds() - span.totalseconds());
 }
 
 /**************************************************************************/
@@ -129,7 +109,7 @@ DateTime DateTime::operator-(const TimeSpan& span) {
 */
 /**************************************************************************/
 TimeSpan DateTime::operator-(const DateTime& right) {
-    return TimeSpan(unixtime() - right.unixtime());
+    return TimeSpan(totalSeconds() - right.totalSeconds());
 }
 
 /**************************************************************************/

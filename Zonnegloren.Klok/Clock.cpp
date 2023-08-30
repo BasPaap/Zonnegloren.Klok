@@ -66,17 +66,19 @@ void Bas::Clock::update()
 	static unsigned long previousMillis;
 
 	unsigned long currentMillis = millis();
-	unsigned long millisSinceLastUpdate = (currentMillis - previousMillis) * constantSpeed;
+	long long millisSinceLastUpdate = (currentMillis - previousMillis) * constantSpeed;
 	previousMillis = currentMillis;
 
-	static unsigned long millisSinceLastSecond;
+	static long long millisSinceLastSecond;
 	millisSinceLastSecond += millisSinceLastUpdate;
 
-	if (millisSinceLastSecond >= NUM_MILLISECONDS_IN_SECOND)
-	{
-		unsigned long numSeconds = floor(millisSinceLastSecond / NUM_MILLISECONDS_IN_SECOND);
-		millisSinceLastSecond = mod(millisSinceLastSecond, NUM_MILLISECONDS_IN_SECOND);
+	long long numSeconds = 0;
 
+	if (millisSinceLastSecond >= NUM_MILLISECONDS_IN_SECOND || millisSinceLastSecond <= 0-NUM_MILLISECONDS_IN_SECOND)
+	{
+		numSeconds = floor(millisSinceLastSecond / NUM_MILLISECONDS_IN_SECOND);
+		millisSinceLastSecond = millisSinceLastSecond % NUM_MILLISECONDS_IN_SECOND;// mod(millisSinceLastSecond, NUM_MILLISECONDS_IN_SECOND);
+		
 		TimeSpan timeToAdd{ abs(numSeconds) };
 		if (constantSpeed < 0)
 		{
@@ -87,7 +89,7 @@ void Bas::Clock::update()
 			time = time + timeToAdd;
 		}
 	}
-
+	
 	Serial.print(time.hour());
 	Serial.print(":");
 	Serial.print(time.minute());

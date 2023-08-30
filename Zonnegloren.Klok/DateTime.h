@@ -29,13 +29,13 @@
 */
 /**************************************************************************/
 
-#define SECONDS_FROM_1970_TO_2000                                              \
-  946684800 ///< Unixtime for 2000-01-01 00:00:00, useful for initialization                 
+//#define SECONDS_FROM_1970_TO_2000                                              \
+//  946684800 ///< Unixtime for 2000-01-01 00:00:00, useful for initialization                 
 
 class DateTime {
 
 public:
-    DateTime(uint32_t t = SECONDS_FROM_1970_TO_2000);
+    DateTime(int64_t t = 0 /*SECONDS_FROM_1970_TO_2000*/);
     DateTime(uint8_t hour, uint8_t min);
     DateTime(const DateTime& copy);
     
@@ -55,8 +55,7 @@ public:
     */
     uint8_t second() const { return ss; }
 
-    /* 32-bit times as seconds since 1970-01-01. */
-    uint32_t unixtime(void) const;
+    int32_t totalSeconds(void) const;
 
     DateTime operator+(const TimeSpan& span);
     DateTime operator-(const TimeSpan& span);
