@@ -29,9 +29,7 @@ namespace Bas
 		int variableSpeedEndHour;
 		int variableSpeedEndMinute;
 		float variableSpeedEndSpeed;
-		
-		long mod(long a, long n);
-		
+				
 	public:
 		Clock();
 		void begin();

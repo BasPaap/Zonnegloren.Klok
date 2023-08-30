@@ -5,11 +5,6 @@
 #include "Clock.h"
 #include "TimeSpan.h"
 
-long Bas::Clock::mod(long a, long n)
-{
-	return a < 0 ? ((a + 1) % n) + n - 1 : a % n;
-}
-
 Bas::Clock::Clock()
 {
 }
@@ -77,7 +72,7 @@ void Bas::Clock::update()
 	if (millisSinceLastSecond >= NUM_MILLISECONDS_IN_SECOND || millisSinceLastSecond <= 0-NUM_MILLISECONDS_IN_SECOND)
 	{
 		numSeconds = floor(millisSinceLastSecond / NUM_MILLISECONDS_IN_SECOND);
-		millisSinceLastSecond = millisSinceLastSecond % NUM_MILLISECONDS_IN_SECOND;// mod(millisSinceLastSecond, NUM_MILLISECONDS_IN_SECOND);
+		millisSinceLastSecond = millisSinceLastSecond % NUM_MILLISECONDS_IN_SECOND;
 		
 		TimeSpan timeToAdd{ abs(numSeconds) };
 		if (constantSpeed < 0)
@@ -89,12 +84,4 @@ void Bas::Clock::update()
 			time = time + timeToAdd;
 		}
 	}
-	
-	Serial.print(time.hour());
-	Serial.print(":");
-	Serial.print(time.minute());
-	Serial.print(":");
-	Serial.print(time.second());
-	Serial.print(".");
-	Serial.println(millisSinceLastSecond);
 }
