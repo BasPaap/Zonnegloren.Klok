@@ -86,8 +86,6 @@ void Bas::Clock::update()
 		{
 			time = time + timeToAdd;
 		}
-
-		time = DateTime{ time.hour(), time.minute(), numSeconds };
 	}
 
 	Serial.print(time.hour());

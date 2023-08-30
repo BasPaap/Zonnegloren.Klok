@@ -33,17 +33,12 @@
   946684800 ///< Unixtime for 2000-01-01 00:00:00, useful for initialization                 
 
 class DateTime {
-    static const uint8_t DEFAULT_YEAR = 2050;
-    static const uint8_t DEFAULT_MONTH = 7;
-    static const uint8_t DEFAULT_DAY = 7;
 
 public:
     DateTime(uint32_t t = SECONDS_FROM_1970_TO_2000);
-    DateTime(uint8_t hour, uint8_t min, uint8_t second = 0);
+    DateTime(uint8_t hour, uint8_t min);
     DateTime(const DateTime& copy);
-    DateTime(const char* iso8601date);
-    bool isValid() const;
-
+    
     /*!
         @brief  Return the hour        
     */
@@ -60,9 +55,6 @@ public:
     */
     uint8_t second() const { return ss; }
 
-    /* 32-bit times as seconds since 2000-01-01. */
-    uint32_t secondstime() const;
-
     /* 32-bit times as seconds since 1970-01-01. */
     uint32_t unixtime(void) const;
 
@@ -75,7 +67,6 @@ public:
         @brief  Test if one DateTime is greater (later) than another.
         @warning if one or both DateTime objects are invalid, returned value is
           meaningless
-        @see use `isValid()` method to check if DateTime object is valid
         @param right DateTime object to compare
         @return True if the left DateTime is later than the right one,
           false otherwise
@@ -116,9 +107,6 @@ public:
     bool operator!=(const DateTime& right) const { return !(*this == right); }
 
 protected:
-    uint8_t yOff; ///< Year offset from 2000
-    uint8_t m;    ///< Month 1-12
-    uint8_t d;    ///< Day 1-31
     uint8_t hh;   ///< Hours 0-23
     uint8_t mm;   ///< Minutes 0-59
     uint8_t ss;   ///< Seconds 0-59

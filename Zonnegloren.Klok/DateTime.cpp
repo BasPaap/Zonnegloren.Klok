@@ -1,55 +1,5 @@
 #include "DateTime.h"
 
-
-/**************************************************************************/
-// utility code, some of this could be exposed in the DateTime API if needed
-/**************************************************************************/
-
-/**
-  Number of days in each month, from January to November. December is not
-  needed. Omitting it avoids an incompatibility with Paul Stoffregen's Time
-  library. C.f. https://github.com/adafruit/RTClib/issues/114
-*/
-const uint8_t daysInMonth[] PROGMEM = { 31, 28, 31, 30, 31, 30,
-                                       31, 31, 30, 31, 30 };
-
-
-/**************************************************************************/
-/*!
-    @brief  Given a date, return number of days since 2000/01/01,
-            valid for 2000--2099
-    @param y Year
-    @param m Month
-    @param d Day
-    @return Number of days
-*/
-/**************************************************************************/
-static uint16_t date2days(uint16_t y, uint8_t m, uint8_t d) {
-    if (y >= 2000U)
-        y -= 2000U;
-    uint16_t days = d;
-    for (uint8_t i = 1; i < m; ++i)
-        days += pgm_read_byte(daysInMonth + i - 1);
-    if (m > 2 && y % 4 == 0)
-        ++days;
-    return days + 365 * y + (y + 3) / 4 - 1;
-}
-
-/**************************************************************************/
-/*!
-    @brief  Given a number of days, hours, minutes, and seconds, return the
-   total seconds
-    @param days Days
-    @param h Hours
-    @param m Minutes
-    @param s Seconds
-    @return Number of seconds total
-*/
-/**************************************************************************/
-static uint32_t time2ulong(uint16_t days, uint8_t h, uint8_t m, uint8_t s) {
-    return ((days * 24UL + h) * 60 + m) * 60 + s;
-}
-
 /**************************************************************************/
 /*!
     @brief  Constructor from
@@ -86,43 +36,21 @@ DateTime::DateTime(uint32_t t) {
     mm = t % 60;
     t /= 60;
     hh = t % 24;
-    uint16_t days = t / 24;
-    uint8_t leap;
-    for (yOff = 0;; ++yOff) {
-        leap = yOff % 4 == 0;
-        if (days < 365U + leap)
-            break;
-        days -= 365 + leap;
-    }
-    for (m = 1; m < 12; ++m) {
-        uint8_t daysPerMonth = pgm_read_byte(daysInMonth + m - 1);
-        if (leap && m == 2)
-            ++daysPerMonth;
-        if (days < daysPerMonth)
-            break;
-        days -= daysPerMonth;
-    }
-    d = days + 1;
 }
 
 /**************************************************************************/
 /*!
-    @brief  Constructor from (hour, minute, second).
+    @brief  Constructor from (hour, minute).
     @warning If the provided parameters are not valid (e.g. 31 February),
            the constructed DateTime will be invalid.
-    @see   The `isValid()` method can be used to test whether the
-           constructed DateTime is valid.
     
-    @param hour,min,second Hour (0--23), minute (0--59) and second (0--59).
+    @param hour,min Hour (0--23), and minute (0--59).
 */
 /**************************************************************************/
-DateTime::DateTime(uint8_t hour, uint8_t min, uint8_t second = 0) {
-    yOff = DEFAULT_YEAR;
-    m = DEFAULT_MONTH;
-    d = DEFAULT_DAY;
+DateTime::DateTime(uint8_t hour, uint8_t min) {    
     hh = hour;
     mm = min;
-    ss = second;
+    ss = 0;
 }
 
 /**************************************************************************/
@@ -132,70 +60,7 @@ DateTime::DateTime(uint8_t hour, uint8_t min, uint8_t second = 0) {
 */
 /**************************************************************************/
 DateTime::DateTime(const DateTime& copy)
-    : yOff(copy.yOff), m(copy.m), d(copy.d), hh(copy.hh), mm(copy.mm),
-    ss(copy.ss) {}
-
-/**************************************************************************/
-/*!
-    @brief  Convert a string containing two digits to uint8_t, e.g. "09" returns
-   9
-    @param p Pointer to a string containing two digits
-*/
-/**************************************************************************/
-static uint8_t conv2d(const char* p) {
-    uint8_t v = 0;
-    if ('0' <= *p && *p <= '9')
-        v = *p - '0';
-    return 10 * v + *++p - '0';
-}
-
-/**************************************************************************/
-/*!
-    @brief  Constructor for creating a DateTime from an ISO8601 date string.
-
-    This constructor expects its parameters to be a string in the
-    https://en.wikipedia.org/wiki/ISO_8601 format, e.g:
-
-    "2020-06-25T15:29:37"
-
-    Usage:
-
-    ```
-    DateTime dt("2020-06-25T15:29:37");
-    ```
-
-    @note The year must be > 2000, as only the yOff is considered.
-
-    @param iso8601dateTime
-           A dateTime string in iso8601 format,
-           e.g. "2020-06-25T15:29:37".
-
-*/
-/**************************************************************************/
-DateTime::DateTime(const char* iso8601dateTime) {
-    char ref[] = "2000-01-01T00:00:00";
-    memcpy(ref, iso8601dateTime, min(strlen(ref), strlen(iso8601dateTime)));
-    yOff = conv2d(ref + 2);
-    m = conv2d(ref + 5);
-    d = conv2d(ref + 8);
-    hh = conv2d(ref + 11);
-    mm = conv2d(ref + 14);
-    ss = conv2d(ref + 17);
-}
-
-/**************************************************************************/
-/*!
-    @brief  Check whether this DateTime is valid.
-    @return true if valid, false if not.
-*/
-/**************************************************************************/
-bool DateTime::isValid() const {
-    if (yOff >= 100)
-        return false;
-    DateTime other(unixtime());
-    return yOff == other.yOff && m == other.m && d == other.d && hh == other.hh &&
-        mm == other.mm && ss == other.ss;
-}
+    : hh(copy.hh), mm(copy.mm), ss(copy.ss) {}
 
 /**************************************************************************/
 /*!
@@ -223,31 +88,9 @@ uint8_t DateTime::hour() const {
 */
 /**************************************************************************/
 uint32_t DateTime::unixtime(void) const {
-    uint32_t t;
-    uint16_t days = date2days(yOff, m, d);
-    t = time2ulong(days, hh, mm, ss);
+    uint32_t t = ((unsigned long)hh * 60 + mm) * 60 + ss;
     t += SECONDS_FROM_1970_TO_2000; // seconds from 1970 to 2000
 
-    return t;
-}
-
-/**************************************************************************/
-/*!
-    @brief  Convert the DateTime to seconds since 1 Jan 2000
-
-    The result can be converted back to a DateTime with:
-
-    ```cpp
-    DateTime(SECONDS_FROM_1970_TO_2000 + value)
-    ```
-
-    @return Number of seconds since 2000-01-01 00:00:00.
-*/
-/**************************************************************************/
-uint32_t DateTime::secondstime(void) const {
-    uint32_t t;
-    uint16_t days = date2days(yOff, m, d);
-    t = time2ulong(days, hh, mm, ss);
     return t;
 }
 
@@ -295,7 +138,6 @@ TimeSpan DateTime::operator-(const DateTime& right) {
     @brief  Test if one DateTime is less (earlier) than another.
     @warning if one or both DateTime objects are invalid, returned value is
         meaningless
-    @see use `isValid()` method to check if DateTime object is valid
     @param right Comparison DateTime object
     @return True if the left DateTime is earlier than the right one,
         false otherwise.
@@ -314,7 +156,6 @@ bool DateTime::operator<(const DateTime& right) const {
     @brief  Test if two DateTime objects are equal.
     @warning if one or both DateTime objects are invalid, returned value is
         meaningless
-    @see use `isValid()` method to check if DateTime object is valid
     @param right Comparison DateTime object
     @return True if both DateTime objects are the same, false otherwise.
 */
