@@ -1,4 +1,5 @@
 
+#include "TimeSpan.h"
 #include <SPI.h>
 #include "NetworkInfo.h"
 #include <WiFiNINA.h>
@@ -8,6 +9,7 @@
 #include "Configuration.h"
 #include "Button.h";
 #include "Clock.h"
+
 
 const int clearConfigurationButtonPin = 12;
 const unsigned long debounceDelay = 50;
@@ -26,7 +28,7 @@ void setup()
 	while (!Serial);  // wait for serial port to connect. Needed for native USB port only
 	
 	clock.begin();
-	clearConfigurationButton.begin(onClearConfigurationButtonPressed);
+	//clearConfigurationButton.begin(onClearConfigurationButtonPressed);
 	//configuration.begin();
 	//	
 	//if (configuration.isAvailable())
