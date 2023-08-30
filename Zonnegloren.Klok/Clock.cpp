@@ -5,6 +5,46 @@
 #include "Clock.h"
 #include "TimeSpan.h"
 
+float Bas::Clock::currentSpeed()
+{
+	if (variableSpeedStartTime == NULL)
+	{
+		return constantSpeed;
+	}
+	else
+	{
+		if (time == variableSpeedStartTime)
+		{
+			isRunningAtVariableSpeed = true;
+		}
+
+		
+		if (isRunningAtVariableSpeed)
+		{
+			Time variableSpeedEndTime = variableSpeedStartTime + variableSpeedDuration;
+
+			if (time == variableSpeedEndTime)
+			{
+				isRunningAtVariableSpeed = false;
+				return constantSpeed;
+			}
+			else
+			{
+				// using variableSpeedStartTime as A and variableSpeedEndTime as B, find the inverse lerp t for time.
+				float t = (float)(time.totalSeconds() - variableSpeedStartTime.totalSeconds()) / (float)(variableSpeedEndTime.totalSeconds() - variableSpeedStartTime.totalSeconds());
+
+				// lerp between startSpeed and endSpeed with t.
+				float variableSpeed = variableSpeedStartSpeed + (variableSpeedEndSpeed - variableSpeedStartSpeed) * t;				
+				return variableSpeed;
+			}			
+		}
+		else
+		{
+			return constantSpeed;
+		}
+	}
+}
+
 Bas::Clock::Clock()
 {
 }
@@ -36,23 +76,20 @@ void Bas::Clock::setConstantSpeed(float speed)
 	this->constantSpeed = speed;
 }
 
-void Bas::Clock::setVariableSpeed(int startHour, int startMinute, float startSpeed, int endHour, int endMinute, float endSpeed)
+void Bas::Clock::setVariableSpeed(int startHour, int startMinute, int durationInMinutes, float startSpeed, float endSpeed)
 {
-	this->variableSpeedStartHour = startHour;
-	this->variableSpeedStartMinute = startMinute;
+	this->variableSpeedStartTime = Time(startHour, startMinute);
+	this->variableSpeedDuration = TimeSpan(durationInMinutes * 60);
 	this->variableSpeedStartSpeed = startSpeed;
-	this->variableSpeedEndHour = endHour;
-	this->variableSpeedEndMinute = endMinute;
 	this->variableSpeedEndSpeed = endSpeed;
 }
 
-void Bas::Clock::getVariableSpeed(int* startHour, int* startMinute, float* startSpeed, int* endHour, int* endMinute, float* endSpeed)
+void Bas::Clock::getVariableSpeed(int* startHour, int* startMinute, int* durationInMinutes, float* startSpeed, float* endSpeed)
 {
-	*startHour = this->variableSpeedStartHour;
-	*startMinute = this->variableSpeedStartMinute;
+	*startHour = this->variableSpeedStartTime.hour();
+	*startMinute = this->variableSpeedStartTime.minute();
+	*durationInMinutes = this->variableSpeedDuration.totalseconds();
 	*startSpeed = this->variableSpeedStartSpeed;
-	*endHour = this->variableSpeedEndHour;
-	*endMinute = this->variableSpeedEndMinute;
 	*endSpeed = this->variableSpeedEndSpeed;
 }
 
@@ -61,7 +98,7 @@ void Bas::Clock::update()
 	static unsigned long previousMillis;
 
 	unsigned long currentMillis = millis();
-	long long millisSinceLastUpdate = (currentMillis - previousMillis) * constantSpeed;
+	long long millisSinceLastUpdate = (currentMillis - previousMillis) * currentSpeed();
 	previousMillis = currentMillis;
 
 	static long long millisSinceLastSecond;
@@ -84,4 +121,10 @@ void Bas::Clock::update()
 			time = time + timeToAdd;
 		}
 	}
+
+	Serial.print(time.hour());
+	Serial.print(":");
+	Serial.print(time.minute());
+	Serial.print(":");
+	Serial.println(time.second());
 }

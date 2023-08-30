@@ -21,14 +21,15 @@ namespace Bas
 		const int NUM_MILLISECONDS_IN_SECOND = 1000;
 				
 		Time time{ 0, 0 };
-		float constantSpeed = -1;
+		float constantSpeed = 1;
 		
-		int variableSpeedStartHour;
-		int variableSpeedStartMinute;
+		bool isRunningAtVariableSpeed = false;
+		Time variableSpeedStartTime = NULL;
 		float variableSpeedStartSpeed;
-		int variableSpeedEndHour;
-		int variableSpeedEndMinute;
+		TimeSpan variableSpeedDuration;
 		float variableSpeedEndSpeed;
+
+		float currentSpeed();
 				
 	public:
 		Clock();
@@ -37,8 +38,8 @@ namespace Bas
 		void getTime(int* hour, int* minute);
 		float getConstantSpeed();
 		void setConstantSpeed(float speed);
-		void setVariableSpeed(int startHour, int startMinute, float startSpeed, int endHour, int endMinute, float endSpeed);
-		void getVariableSpeed(int* startHour, int* startMinute, float* startSpeed, int* endHour, int* endMinute, float* endSpeed);
+		void setVariableSpeed(int startHour, int startMinute, int durationInMinutes, float startSpeed, float endSpeed);
+		void getVariableSpeed(int* startHour, int* startMinute, int* durationInMinutes, float* startSpeed, float* endSpeed);
 		void update();
 	};
 }

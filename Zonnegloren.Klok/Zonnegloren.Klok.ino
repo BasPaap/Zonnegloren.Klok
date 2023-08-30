@@ -28,6 +28,8 @@ void setup()
 	while (!Serial);  // wait for serial port to connect. Needed for native USB port only
 	
 	clock.begin();
+	clock.setVariableSpeed(0, 1, 2, 1, 0.5);
+
 	//clearConfigurationButton.begin(onClearConfigurationButtonPressed);
 	//configuration.begin();
 	//	
@@ -66,7 +68,7 @@ void loop()
 	wiFiNetwork.update();
 	mdns.update();
 	webServer.update();*/
-	clock.update();
+	clock.update();	
 }
 
 void onConfigurationDataReceived(const char* ssid, const char* password, uint8_t keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName)

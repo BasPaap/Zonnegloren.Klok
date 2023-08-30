@@ -139,7 +139,7 @@ bool Time::operator<(const Time& right) const {
 */
 /**************************************************************************/
 bool Time::operator==(const Time& right) const {
-    return (right.hour() == hh && right.minute() == mm &&
-        right.second() == ss);
+    return (right.hour() == hh && right.minute() == mm);/* &&
+        right.second() == ss);*/
 }
 
