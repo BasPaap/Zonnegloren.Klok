@@ -20,7 +20,7 @@ namespace Bas
 		const int NUM_SECONDS_IN_MINUTE = 60;
 		const int NUM_MILLISECONDS_IN_SECOND = 1000;
 				
-		DateTime time{ 2050, 7, 7, 0, 0, 0 };
+		DateTime time{ 0, 0 };
 		float constantSpeed = 60 * 60;
 		
 		int variableSpeedStartHour;

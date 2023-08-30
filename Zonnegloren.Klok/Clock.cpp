@@ -22,7 +22,7 @@ void Bas::Clock::setTime(int hour, int minute)
 {
 	// We'll consider the stepper motor's current positions to be the positions for currentHour and currentMinute.
 	// Therefore, we need to calculate the amount of steps we need to move each hand from currentHour to hour and from currentMinute to minute.
-	time = DateTime{ 2050, 7, 7, hour, minute, 0 };
+	time = DateTime{ hour, minute };
 }
 
 void Bas::Clock::getTime(int* hour, int* minute)
@@ -87,7 +87,7 @@ void Bas::Clock::update()
 			time = time + timeToAdd;
 		}
 
-		time = DateTime{ 2050, 7, 7, time.hour(), time.minute(), numSeconds };
+		time = DateTime{ time.hour(), time.minute(), numSeconds };
 	}
 
 	Serial.print(time.hour());
