@@ -1,16 +1,16 @@
-#include "DateTime.h"
+#include "Time.h"
 
 /**************************************************************************/
 /*!
     @brief  Constructor from number of seconds since 00:00:00
         
-    This builds a DateTime from an integer specifying the number of seconds
+    This builds a Time from an integer specifying the number of seconds
     elapsed since midnight.
     
     @param t Time elapsed in seconds since 00:00:00.
 */
 /**************************************************************************/
-DateTime::DateTime(int64_t t) {
+Time::Time(int64_t t) {
     // If this constructor is called with a negative value t, that means we want to count back from 00:00:00. Therefore, we'll add an entire day's worth
     // of seconds to t, which will get us the correct value.
 
@@ -32,13 +32,11 @@ DateTime::DateTime(int64_t t) {
 /**************************************************************************/
 /*!
     @brief  Constructor from (hour, minute).
-    @warning If the provided parameters are not valid (e.g. 31 February),
-           the constructed DateTime will be invalid.
     
     @param hour,min Hour (0--23), and minute (0--59).
 */
 /**************************************************************************/
-DateTime::DateTime(uint8_t hour, uint8_t min) {    
+Time::Time(uint8_t hour, uint8_t min) {    
     hh = hour;
     mm = min;
     ss = 0;    
@@ -47,10 +45,10 @@ DateTime::DateTime(uint8_t hour, uint8_t min) {
 /**************************************************************************/
 /*!
     @brief  Copy constructor.
-    @param copy DateTime to copy.
+    @param copy Time to copy.
 */
 /**************************************************************************/
-DateTime::DateTime(const DateTime& copy)
+Time::Time(const Time& copy)
     : hh(copy.hh), mm(copy.mm), ss(copy.ss) {}
 
 /**************************************************************************/
@@ -59,7 +57,7 @@ DateTime::DateTime(const DateTime& copy)
       @return Hour (0--11).
 */
 /**************************************************************************/
-uint8_t DateTime::hour() const {
+uint8_t Time::hour() const {
     if (hh >= 12) { // 1 o'clock or later
         return hh - 12;
     }
@@ -69,61 +67,61 @@ uint8_t DateTime::hour() const {
 }
 
 
-int32_t DateTime::totalSeconds(void) const {
+int32_t Time::totalSeconds(void) const {
     int32_t t = ((unsigned long)hh * 60 + mm) * 60 + ss;
     return t;
 }
 
 /**************************************************************************/
 /*!
-    @brief  Add a TimeSpan to the DateTime object
+    @brief  Add a TimeSpan to the Time object
     @param span TimeSpan object
-    @return New DateTime object with span added to it.
+    @return New Time object with span added to it.
 */
 /**************************************************************************/
-DateTime DateTime::operator+(const TimeSpan& span) {
-    return DateTime(totalSeconds() + span.totalseconds());
+Time Time::operator+(const TimeSpan& span) {
+    return Time(totalSeconds() + span.totalseconds());
 }
 
 /**************************************************************************/
 /*!
-    @brief  Subtract a TimeSpan from the DateTime object
+    @brief  Subtract a TimeSpan from the Time object
     @param span TimeSpan object
-    @return New DateTime object with span subtracted from it.
+    @return New Time object with span subtracted from it.
 */
 /**************************************************************************/
-DateTime DateTime::operator-(const TimeSpan& span) {
-    return DateTime(totalSeconds() - span.totalseconds());
+Time Time::operator-(const TimeSpan& span) {
+    return Time(totalSeconds() - span.totalseconds());
 }
 
 /**************************************************************************/
 /*!
-    @brief  Subtract one DateTime from another
+    @brief  Subtract one Time from another
 
-    @note Since a TimeSpan cannot be negative, the subtracted DateTime
+    @note Since a TimeSpan cannot be negative, the subtracted Time
         should be less (earlier) than or equal to the one it is
         subtracted from.
 
-    @param right The DateTime object to subtract from self (the left object)
-    @return TimeSpan of the difference between DateTimes.
+    @param right The Time object to subtract from self (the left object)
+    @return TimeSpan of the difference between Times.
 */
 /**************************************************************************/
-TimeSpan DateTime::operator-(const DateTime& right) {
+TimeSpan Time::operator-(const Time& right) {
     return TimeSpan(totalSeconds() - right.totalSeconds());
 }
 
 /**************************************************************************/
 /*!
     @author Anton Rieutskyi
-    @brief  Test if one DateTime is less (earlier) than another.
-    @warning if one or both DateTime objects are invalid, returned value is
+    @brief  Test if one Time is less (earlier) than another.
+    @warning if one or both Time objects are invalid, returned value is
         meaningless
-    @param right Comparison DateTime object
-    @return True if the left DateTime is earlier than the right one,
+    @param right Comparison Time object
+    @return True if the left Time is earlier than the right one,
         false otherwise.
 */
 /**************************************************************************/
-bool DateTime::operator<(const DateTime& right) const {
+bool Time::operator<(const Time& right) const {
     return (hh < right.hour() ||
                                 (hh == right.hour() &&
                                     (mm < right.minute() ||
@@ -133,14 +131,14 @@ bool DateTime::operator<(const DateTime& right) const {
 /**************************************************************************/
 /*!
     @author Anton Rieutskyi
-    @brief  Test if two DateTime objects are equal.
-    @warning if one or both DateTime objects are invalid, returned value is
+    @brief  Test if two Time objects are equal.
+    @warning if one or both Time objects are invalid, returned value is
         meaningless
-    @param right Comparison DateTime object
-    @return True if both DateTime objects are the same, false otherwise.
+    @param right Comparison Time object
+    @return True if both Time objects are the same, false otherwise.
 */
 /**************************************************************************/
-bool DateTime::operator==(const DateTime& right) const {
+bool Time::operator==(const Time& right) const {
     return (right.hour() == hh && right.minute() == mm &&
         right.second() == ss);
 }

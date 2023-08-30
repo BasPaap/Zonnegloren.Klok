@@ -9,7 +9,7 @@
 #include "WProgram.h"
 #endif
 
-#include "DateTime.h"
+#include "Time.h"
 
 namespace Bas
 {
@@ -20,8 +20,8 @@ namespace Bas
 		const int NUM_SECONDS_IN_MINUTE = 60;
 		const int NUM_MILLISECONDS_IN_SECOND = 1000;
 				
-		DateTime time{ 0, 0 };
-		float constantSpeed = -3600;
+		Time time{ 0, 0 };
+		float constantSpeed = -1;
 		
 		int variableSpeedStartHour;
 		int variableSpeedStartMinute;

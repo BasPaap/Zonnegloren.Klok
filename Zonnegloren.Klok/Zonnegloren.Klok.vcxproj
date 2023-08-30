@@ -122,7 +122,7 @@
     <None Include="klok-config.html" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Clock.cpp" />
-    <ClCompile Include="DateTime.cpp" />
+    <ClCompile Include="Time.cpp" />
     <ClCompile Include="FirstCalibrationHtmlPage.cpp" />
     <ClCompile Include="HtmlPage.cpp" />
     <ClCompile Include="TimeSpan.cpp" />
@@ -140,7 +140,7 @@
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="ConfirmConfigurationHtmlPage.cpp" />
     <ClInclude Include="ControlHtmlPage.cpp" />
-    <ClInclude Include="DateTime.h" />
+    <ClInclude Include="Time.h" />
     <ClInclude Include="Mdns.h" />
     <ClInclude Include="MdnsHeader.h" />
     <ClInclude Include="NetworkInfo.h" />
