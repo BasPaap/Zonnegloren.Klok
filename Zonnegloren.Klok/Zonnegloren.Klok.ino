@@ -1,4 +1,6 @@
 
+#include "StepperDriver.h"
+#include <Stepper.h>
 #include "TimeSpan.h"
 #include <SPI.h>
 #include "NetworkInfo.h"
@@ -21,12 +23,14 @@ Bas::WebServer webServer;
 Bas::Button clearConfigurationButton { clearConfigurationButtonPin, debounceDelay, Bas::Button::LogLevel::none };
 Bas::Clock clock;
 
+#include <Stepper.h>
+
 void setup()
 {
 	//Initialize serial and wait for port to open:
 	Serial.begin(9600);
 	while (!Serial);  // wait for serial port to connect. Needed for native USB port only
-	
+
 	clock.begin();
 	clock.setVariableSpeed(0, 1, 2, 1, 0.5);
 

@@ -10,7 +10,7 @@
     @param t Time elapsed in seconds since 00:00:00.
 */
 /**************************************************************************/
-Time::Time(int64_t t) {
+Bas::Time::Time(int64_t t) {
     // If this constructor is called with a negative value t, that means we want to count back from 00:00:00. Therefore, we'll add an entire day's worth
     // of seconds to t, which will get us the correct value.
 
@@ -36,7 +36,7 @@ Time::Time(int64_t t) {
     @param hour,min Hour (0--23), and minute (0--59).
 */
 /**************************************************************************/
-Time::Time(uint8_t hour, uint8_t min) {    
+Bas::Time::Time(uint8_t hour, uint8_t min) {
     hh = hour;
     mm = min;
     ss = 0;    
@@ -48,7 +48,7 @@ Time::Time(uint8_t hour, uint8_t min) {
     @param copy Time to copy.
 */
 /**************************************************************************/
-Time::Time(const Time& copy)
+Bas::Time::Time(const Time& copy)
     : hh(copy.hh), mm(copy.mm), ss(copy.ss) {}
 
 /**************************************************************************/
@@ -57,7 +57,7 @@ Time::Time(const Time& copy)
       @return Hour (0--11).
 */
 /**************************************************************************/
-uint8_t Time::hour() const {
+uint8_t Bas::Time::hour() const {
     if (hh >= 12) { // 1 o'clock or later
         return hh - 12;
     }
@@ -67,7 +67,7 @@ uint8_t Time::hour() const {
 }
 
 
-int32_t Time::totalSeconds(void) const {
+int32_t Bas::Time::totalSeconds(void) const {
     int32_t t = ((unsigned long)hh * 60 + mm) * 60 + ss;
     return t;
 }
@@ -79,7 +79,7 @@ int32_t Time::totalSeconds(void) const {
     @return New Time object with span added to it.
 */
 /**************************************************************************/
-Time Time::operator+(const TimeSpan& span) {
+Bas::Time Bas::Time::operator+(const TimeSpan& span) {
     return Time(totalSeconds() + span.totalseconds());
 }
 
@@ -90,7 +90,7 @@ Time Time::operator+(const TimeSpan& span) {
     @return New Time object with span subtracted from it.
 */
 /**************************************************************************/
-Time Time::operator-(const TimeSpan& span) {
+Bas::Time Bas::Time::operator-(const TimeSpan& span) {
     return Time(totalSeconds() - span.totalseconds());
 }
 
@@ -106,7 +106,7 @@ Time Time::operator-(const TimeSpan& span) {
     @return TimeSpan of the difference between Times.
 */
 /**************************************************************************/
-TimeSpan Time::operator-(const Time& right) {
+Bas::TimeSpan Bas::Time::operator-(const Time& right) {
     return TimeSpan(totalSeconds() - right.totalSeconds());
 }
 
@@ -121,7 +121,7 @@ TimeSpan Time::operator-(const Time& right) {
         false otherwise.
 */
 /**************************************************************************/
-bool Time::operator<(const Time& right) const {
+bool Bas::Time::operator<(const Time& right) const {
     return (hh < right.hour() ||
                                 (hh == right.hour() &&
                                     (mm < right.minute() ||
@@ -138,7 +138,7 @@ bool Time::operator<(const Time& right) const {
     @return True if both Time objects are the same, false otherwise.
 */
 /**************************************************************************/
-bool Time::operator==(const Time& right) const {
+bool Bas::Time::operator==(const Time& right) const {
     return (right.hour() == hh && right.minute() == mm);/* &&
         right.second() == ss);*/
 }

@@ -11,7 +11,7 @@
     @param seconds Number of seconds
 */
 /**************************************************************************/
-TimeSpan::TimeSpan(int32_t seconds) : _seconds(seconds) {}
+Bas::TimeSpan::TimeSpan(int32_t seconds) : _seconds(seconds) {}
 
 /**************************************************************************/
 /*!
@@ -19,7 +19,7 @@ TimeSpan::TimeSpan(int32_t seconds) : _seconds(seconds) {}
     @param copy The TimeSpan to copy
 */
 /**************************************************************************/
-TimeSpan::TimeSpan(const TimeSpan& copy) : _seconds(copy._seconds) {}
+Bas::TimeSpan::TimeSpan(const TimeSpan& copy) : _seconds(copy._seconds) {}
 
 /**************************************************************************/
 /*!
@@ -28,7 +28,7 @@ TimeSpan::TimeSpan(const TimeSpan& copy) : _seconds(copy._seconds) {}
     @return New TimeSpan object, sum of left and right
 */
 /**************************************************************************/
-TimeSpan TimeSpan::operator+(const TimeSpan& right) {
+Bas::TimeSpan Bas::TimeSpan::operator+(const TimeSpan& right) {
     return TimeSpan(_seconds + right._seconds);
 }
 
@@ -39,6 +39,6 @@ TimeSpan TimeSpan::operator+(const TimeSpan& right) {
     @return New TimeSpan object, right subtracted from left
 */
 /**************************************************************************/
-TimeSpan TimeSpan::operator-(const TimeSpan& right) {
+Bas::TimeSpan Bas::TimeSpan::operator-(const TimeSpan& right) {
     return TimeSpan(_seconds - right._seconds);
 }
