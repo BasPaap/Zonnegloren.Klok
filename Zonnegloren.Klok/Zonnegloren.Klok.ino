@@ -27,8 +27,10 @@ Bas::Mdns mdns;
 Bas::WebServer webServer;
 Bas::Button clearConfigurationButton { clearConfigurationButtonPin, debounceDelay, Bas::Button::LogLevel::none };
 Bas::Clock clock;
-Bas::L9110SStepperDriver stepperDriver{ 720, 4, 5, 6, 7 };
-Bas::Hand hourHand{ &clock, Bas::HandMotor { &stepperDriver }, Bas::Hand::HandType::minute };
+Bas::L9110SStepperDriver minuteStepperDriver{ 720, 4, 5, 6, 7 };
+Bas::L9110SStepperDriver hourStepperDriver{ 720, 8, 9, 10, 11 };
+Bas::Hand minuteHand{ &clock, Bas::HandMotor { &minuteStepperDriver }, Bas::Hand::HandType::minute };
+Bas::Hand hourHand{ &clock, Bas::HandMotor { &hourStepperDriver }, Bas::Hand::HandType::hour };
 
 #include <Stepper.h>
 
@@ -38,9 +40,10 @@ void setup()
 	Serial.begin(9600);
 	while (!Serial);  // wait for serial port to connect. Needed for native USB port only
 
-	clock.setConstantSpeed(60);
+	clock.setConstantSpeed(1);
 	clock.begin();
 
+	minuteHand.begin();
 	hourHand.begin();
 
 	//clearConfigurationButton.begin(onClearConfigurationButtonPressed);
@@ -82,7 +85,8 @@ void loop()
 	mdns.update();
 	webServer.update();*/
 	clock.update();	
-	hourHand.update();	
+	minuteHand.update();	
+	hourHand.update();
 }
 
 void onConfigurationDataReceived(const char* ssid, const char* password, uint8_t keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName)
