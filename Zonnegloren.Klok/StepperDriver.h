@@ -13,8 +13,13 @@ namespace Bas
 {
 	class StepperDriver
 	{
+		int numStepsPerRevolution;
+
 	public:
-		virtual void step(long numSteps) = 0;
+		StepperDriver(int numStepsPerRevolution);		
+		virtual void begin();
+		virtual void step(long numSteps);
+		int getNumStepsPerRevolution();
 	};
 }
 

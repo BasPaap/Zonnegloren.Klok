@@ -28,18 +28,17 @@ namespace Bas
 		float variableSpeedStartSpeed;
 		TimeSpan variableSpeedDuration;
 		float variableSpeedEndSpeed;
-
-		float currentSpeed();
-				
+								
 	public:
 		Clock();
 		void begin();
 		void setTime(int hour, int minute);
-		void getTime(int* hour, int* minute);
+		void getTime(float* hour, float* minute);
 		float getConstantSpeed();
 		void setConstantSpeed(float speed);
 		void setVariableSpeed(int startHour, int startMinute, int durationInMinutes, float startSpeed, float endSpeed);
 		void getVariableSpeed(int* startHour, int* startMinute, int* durationInMinutes, float* startSpeed, float* endSpeed);
+		float getCurrentSpeed();
 		void update();
 	};
 }

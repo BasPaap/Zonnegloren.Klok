@@ -5,46 +5,6 @@
 #include "Clock.h"
 #include "TimeSpan.h"
 
-float Bas::Clock::currentSpeed()
-{
-	if (variableSpeedStartTime == NULL)
-	{
-		return constantSpeed;
-	}
-	else
-	{
-		if (time == variableSpeedStartTime)
-		{
-			isRunningAtVariableSpeed = true;
-		}
-
-		
-		if (isRunningAtVariableSpeed)
-		{
-			Time variableSpeedEndTime = variableSpeedStartTime + variableSpeedDuration;
-
-			if (time == variableSpeedEndTime)
-			{
-				isRunningAtVariableSpeed = false;
-				return constantSpeed;
-			}
-			else
-			{
-				// using variableSpeedStartTime as A and variableSpeedEndTime as B, find the inverse lerp t for time.
-				float t = (float)(time.totalSeconds() - variableSpeedStartTime.totalSeconds()) / (float)(variableSpeedEndTime.totalSeconds() - variableSpeedStartTime.totalSeconds());
-
-				// lerp between startSpeed and endSpeed with t.
-				float variableSpeed = variableSpeedStartSpeed + (variableSpeedEndSpeed - variableSpeedStartSpeed) * t;				
-				return variableSpeed;
-			}			
-		}
-		else
-		{
-			return constantSpeed;
-		}
-	}
-}
-
 Bas::Clock::Clock()
 {
 }
@@ -60,10 +20,12 @@ void Bas::Clock::setTime(int hour, int minute)
 	time = Time{ hour, minute };
 }
 
-void Bas::Clock::getTime(int* hour, int* minute)
+void Bas::Clock::getTime(float* hour, float* minute)
 {
-	*hour = time.hour();
-	*minute = time.minute();
+	*minute = time.minute() + (time.second() / (float)NUM_SECONDS_IN_MINUTE);
+
+	const int numSecondsInHour = NUM_SECONDS_IN_MINUTE * NUM_MINUTES_IN_HOUR;
+	*hour = time.hour() + (*minute / numSecondsInHour);	
 }
 
 float Bas::Clock::getConstantSpeed()
@@ -93,12 +55,52 @@ void Bas::Clock::getVariableSpeed(int* startHour, int* startMinute, int* duratio
 	*endSpeed = this->variableSpeedEndSpeed;
 }
 
+float Bas::Clock::getCurrentSpeed()
+{
+	if (variableSpeedStartTime == NULL)
+	{
+		return constantSpeed;
+	}
+	else
+	{
+		if (time == variableSpeedStartTime)
+		{
+			isRunningAtVariableSpeed = true;
+		}
+
+
+		if (isRunningAtVariableSpeed)
+		{
+			Time variableSpeedEndTime = variableSpeedStartTime + variableSpeedDuration;
+
+			if (time == variableSpeedEndTime)
+			{
+				isRunningAtVariableSpeed = false;
+				return constantSpeed;
+			}
+			else
+			{
+				// using variableSpeedStartTime as A and variableSpeedEndTime as B, find the inverse lerp t for time.
+				float t = (float)(time.totalSeconds() - variableSpeedStartTime.totalSeconds()) / (float)(variableSpeedEndTime.totalSeconds() - variableSpeedStartTime.totalSeconds());
+
+				// lerp between startSpeed and endSpeed with t.
+				float variableSpeed = variableSpeedStartSpeed + (variableSpeedEndSpeed - variableSpeedStartSpeed) * t;
+				return variableSpeed;
+			}
+		}
+		else
+		{
+			return constantSpeed;
+		}
+	}
+}
+
 void Bas::Clock::update()
 {
 	static unsigned long previousMillis;
 
 	unsigned long currentMillis = millis();
-	long long millisSinceLastUpdate = (currentMillis - previousMillis) * currentSpeed();
+	long long millisSinceLastUpdate = (currentMillis - previousMillis) * getCurrentSpeed();
 	previousMillis = currentMillis;
 
 	static long long millisSinceLastSecond;
