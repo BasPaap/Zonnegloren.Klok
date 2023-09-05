@@ -26,7 +26,7 @@ namespace Bas
 		bool isRunningAtVariableSpeed = false;
 		Time variableSpeedStartTime = NULL;
 		float variableSpeedStartSpeed;
-		TimeSpan variableSpeedDuration;
+		Time variableSpeedEndTime;
 		float variableSpeedEndSpeed;
 								
 	public:
@@ -36,8 +36,8 @@ namespace Bas
 		void getTime(float* hour, float* minute);
 		float getConstantSpeed();
 		void setConstantSpeed(float speed);
-		void setVariableSpeed(int startHour, int startMinute, int durationInMinutes, float startSpeed, float endSpeed);
-		void getVariableSpeed(int* startHour, int* startMinute, int* durationInMinutes, float* startSpeed, float* endSpeed);
+		void setVariableSpeed(int startHour, int startMinute, int endHour, int endMinute, float startSpeed, float endSpeed);
+		void getVariableSpeed(int* startHour, int* startMinute, int* endHour, int* endMinute, float* startSpeed, float* endSpeed);
 		float getCurrentSpeed();
 		void update();
 	};

@@ -38,19 +38,20 @@ void Bas::Clock::setConstantSpeed(float speed)
 	this->constantSpeed = speed;
 }
 
-void Bas::Clock::setVariableSpeed(int startHour, int startMinute, int durationInMinutes, float startSpeed, float endSpeed)
+void Bas::Clock::setVariableSpeed(int startHour, int startMinute, int endHour, int endMinute, float startSpeed, float endSpeed)
 {
 	this->variableSpeedStartTime = Time(startHour, startMinute);
-	this->variableSpeedDuration = TimeSpan(durationInMinutes * 60);
+	this->variableSpeedEndTime = Time(endHour, endMinute);
 	this->variableSpeedStartSpeed = startSpeed;
 	this->variableSpeedEndSpeed = endSpeed;
 }
 
-void Bas::Clock::getVariableSpeed(int* startHour, int* startMinute, int* durationInMinutes, float* startSpeed, float* endSpeed)
+void Bas::Clock::getVariableSpeed(int* startHour, int* startMinute, int* endHour, int* endMinute, float* startSpeed, float* endSpeed)
 {
 	*startHour = this->variableSpeedStartTime.hour();
 	*startMinute = this->variableSpeedStartTime.minute();
-	*durationInMinutes = this->variableSpeedDuration.totalseconds();
+	*endHour = this->variableSpeedEndTime.hour();
+	*endMinute = this->variableSpeedEndTime.minute();
 	*startSpeed = this->variableSpeedStartSpeed;
 	*endSpeed = this->variableSpeedEndSpeed;
 }
@@ -70,9 +71,7 @@ float Bas::Clock::getCurrentSpeed()
 
 
 		if (isRunningAtVariableSpeed)
-		{
-			Time variableSpeedEndTime = variableSpeedStartTime + variableSpeedDuration;
-
+		{			
 			if (time == variableSpeedEndTime)
 			{
 				isRunningAtVariableSpeed = false;
