@@ -1,4 +1,3 @@
-
 #include "Hand.h"
 #include "HandMotor.h"
 #include "L9110SStepperDriver.h"
@@ -12,11 +11,11 @@
 #include "Mdns.h"
 #include "WebServer.h"
 #include "Configuration.h"
-#include "Button.h";
 #include "Clock.h"
 #include "L9110SStepperDriver.h"
 #include "HandMotor.h"
 #include "Hand.h"
+#include <Bas.Button.h>
 
 const int clearConfigurationButtonPin = 12;
 const unsigned long debounceDelay = 50;
