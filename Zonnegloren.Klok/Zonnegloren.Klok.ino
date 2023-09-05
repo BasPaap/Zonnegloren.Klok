@@ -17,7 +17,7 @@
 #include "Hand.h"
 #include <Bas.Button.h>
 
-const int clearConfigurationButtonPin = 12;
+const int clearConfigurationButtonPin = 10;
 const unsigned long debounceDelay = 50;
 
 Bas::Configuration configuration;
@@ -26,8 +26,8 @@ Bas::Mdns mdns;
 Bas::WebServer webServer;
 Bas::Button clearConfigurationButton { clearConfigurationButtonPin, debounceDelay, Bas::Button::LogLevel::none };
 Bas::Clock clock;
-Bas::L9110SStepperDriver minuteStepperDriver{ 720, 4, 5, 6, 7 };
-Bas::L9110SStepperDriver hourStepperDriver{ 720, 8, 9, 10, 11 };
+Bas::L9110SStepperDriver minuteStepperDriver{ 720, 2, 3, 4, 5 };
+Bas::L9110SStepperDriver hourStepperDriver{ 720, 6, 7, 8, 9 };
 Bas::Hand minuteHand{ &clock, Bas::HandMotor { &minuteStepperDriver }, Bas::Hand::HandType::minute };
 Bas::Hand hourHand{ &clock, Bas::HandMotor { &hourStepperDriver }, Bas::Hand::HandType::hour };
 
@@ -39,7 +39,7 @@ void setup()
 	Serial.begin(9600);
 	while (!Serial);  // wait for serial port to connect. Needed for native USB port only
 
-	clock.setConstantSpeed(1);
+	clock.setConstantSpeed(60);
 	clock.begin();
 
 	minuteHand.begin();
