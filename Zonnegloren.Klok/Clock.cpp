@@ -22,9 +22,9 @@ void Bas::Clock::setTime(int hour, int minute)
 
 void Bas::Clock::getTime(float* hour, float* minute)
 {
-	*minute = time.minute() + (time.second() / (float)NUM_SECONDS_IN_MINUTE);
+	*minute = time.minute() + (time.second() / (float)numSecondsInMinute);
 
-	const int numSecondsInHour = NUM_SECONDS_IN_MINUTE * NUM_MINUTES_IN_HOUR;
+	const int numSecondsInHour = numSecondsInMinute * numMinutesInHour;
 	*hour = time.hour() + (*minute / numSecondsInHour);	
 }
 
@@ -108,10 +108,10 @@ void Bas::Clock::update()
 
 	long long numSeconds = 0;
 
-	if (millisSinceLastSecond >= NUM_MILLISECONDS_IN_SECOND || millisSinceLastSecond <= 0-NUM_MILLISECONDS_IN_SECOND)
+	if (millisSinceLastSecond >= numMillisecondsInSecond || millisSinceLastSecond <= 0-numMillisecondsInSecond)
 	{
-		numSeconds = floor(millisSinceLastSecond / NUM_MILLISECONDS_IN_SECOND);
-		millisSinceLastSecond = millisSinceLastSecond % NUM_MILLISECONDS_IN_SECOND;
+		numSeconds = floor(millisSinceLastSecond / numMillisecondsInSecond);
+		millisSinceLastSecond = millisSinceLastSecond % numMillisecondsInSecond;
 		
 		TimeSpan timeToAdd{ abs(numSeconds) };
 		if (constantSpeed < 0)

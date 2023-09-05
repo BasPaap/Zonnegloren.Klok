@@ -17,27 +17,27 @@ namespace Bas
 {
 	class WebServer
 	{
-		const int MAX_SSID_LENGTH = 32;
-		const int MAX_PASSWORD_LENGTH = 63;
-		const int MAX_DOMAIN_NAME_LENGTH = 253;
-		const int MAX_ENCRYPTION_TYPE_CODE_LENGTH = 1;
-		const int MAX_KEY_INDEX_LENGTH = 1;
+		const int maxSsidLength = 32;
+		const int maxPasswordLength = 63;
+		const int maxDomainNameLength = 253;
+		const int maxEncryptionTypeCodeLength = 1;
+		const int maxKeyIndexLength = 1;
 
 		using ConfigurationDataReceivedCallbackPointer = void(*)(const char* ssid, const char* password, uint8_t keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName);
 		using ControlDataReceivedCallbackPointer = void(*)();
 		using RequestResetCallbackPointer = void(*)();
 		using CalibrationDataReceivedCallbackPointer = void(*)(uint8_t hours, uint8_t minutes);
 	public:
-		typedef enum { CONFIGURATION_PAGE, FIRST_CALIBRATION_PAGE, CONTROL_PAGE } page;
-		typedef enum { UNKNOWN, GET, POST, PUT, PATCH, DELETE } httpMethod;
-		static const int MAX_SCANNED_NETWORKS = 20;
-		static const int MAX_BODY_LENGTH = 255;
+		typedef enum { configurationPage, firstCalibrationPage, controlPage } page;
+		typedef enum { unknown, GET, POST, PUT, PATCH, DELETE } httpMethod;
+		static const int maxScannedNetworks = 20;
+		static const int maxBodyLength = 255;
 
 	private:		
 		WiFiServer server{ 80 };
 		page pageToServe;
 		
-		Bas::NetworkInfo scannedNetworks[MAX_SCANNED_NETWORKS];
+		Bas::NetworkInfo scannedNetworks[maxScannedNetworks];
 		int scannedNetworksLength = 0;
 		ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback;
 		ControlDataReceivedCallbackPointer onControlDataReceivedCallback;

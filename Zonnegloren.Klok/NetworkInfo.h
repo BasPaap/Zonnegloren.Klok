@@ -14,11 +14,11 @@ namespace Bas
 	class NetworkInfo
 	{
 	public:
-		static const int MAX_SSID_LENGTH = 32;
-		typedef enum { NONE, WPA, WEP } encryptionType_t;
+		static const int maxSsidLength = 32;
+		typedef enum { none, wpa, wep } encryptionType_t;
 		NetworkInfo();
 		NetworkInfo(const char* ssid, int32_t rssi, uint8_t encryptionType);
-		char ssid[MAX_SSID_LENGTH +1];
+		char ssid[maxSsidLength +1];
 		int32_t rssi;
 		encryptionType_t encryptionType;
 

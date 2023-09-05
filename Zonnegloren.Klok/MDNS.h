@@ -15,15 +15,15 @@ namespace Bas
 {
 	class Mdns
 	{
-		static const int MAX_DOMAIN_NAME_LENGTH = 253;
-		static const int MAX_DNS_PACKET_SIZE = 512;
-		static const int QUERY_TYPE_A = 0x01;
-		static const int QUERY_TYPE_HTTPS = 0x41;
+		static const int maxDomainNameLength = 253;
+		static const int maxDnsPacketSize = 512;
+		static const int queryTypeA = 0x01;
+		static const int queryTypeHttps = 0x41;
 
-		const IPAddress MDNS_ADDRESS{ 224, 0, 0, 251 };
-		unsigned const int MDNS_PORT = 5353;
-		const int MAX_LABEL_LENGTH = 63;
-		const int IGNORE_FURTHER_QUESTIONS = -1;
+		const IPAddress mdnsAddress{ 224, 0, 0, 251 };
+		unsigned const int mdnsPort = 5353;
+		const int maxLabelLength = 63;
+		const int ignoreFurtherQuestions = -1;
 		char * deviceDomainName;
 		IPAddress localIPAddress;
 		WiFiUDP udp;

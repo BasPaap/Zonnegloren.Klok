@@ -45,44 +45,44 @@ void setup()
 	minuteHand.begin();
 	hourHand.begin();
 
-	//clearConfigurationButton.begin(onClearConfigurationButtonPressed);
-	//configuration.begin();
-	//	
-	//if (configuration.isAvailable())
-	//{
-	//	wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword(), configuration.getKeyIndex(), configuration.getEncryptionType(), onConnectionFailure);
-	//	mdns.begin(configuration.getDeviceDomainName(), wiFiNetwork.getLocalIPAddress());
-	//	webServer.begin(onConfigurationDataReceived, onControlDataReceived, onResetRequested, onCalibrationDataReceived);
-	//	webServer.setPageToServe(Bas::WebServer::page::FIRST_CALIBRATION_PAGE);	// Because the clock has just powered up, we have no idea what time the hands are on yet, so we need to calibrate first.
-	//}
-	//else
-	//{
-	//	int numNetworks = WiFi.scanNetworks();
+	clearConfigurationButton.begin(onClearConfigurationButtonPressed);
+	configuration.begin();
+		
+	if (configuration.isAvailable())
+	{
+		wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword(), configuration.getKeyIndex(), configuration.getEncryptionType(), onConnectionFailure);
+		mdns.begin(configuration.getDeviceDomainName(), wiFiNetwork.getLocalIPAddress());
+		webServer.begin(onConfigurationDataReceived, onControlDataReceived, onResetRequested, onCalibrationDataReceived);
+		webServer.setPageToServe(Bas::WebServer::page::firstCalibrationPage);	// Because the clock has just powered up, we have no idea what time the hands are on yet, so we need to calibrate first.
+	}
+	else
+	{
+		int numNetworks = WiFi.scanNetworks();
 
-	//	Serial.print(numNetworks);
-	//	Serial.println(" Wi-Fi networks found.");
-	//	int scannedNetworksLength = min(numNetworks, Bas::WebServer::MAX_SCANNED_NETWORKS);
+		Serial.print(numNetworks);
+		Serial.println(" Wi-Fi networks found.");
+		int scannedNetworksLength = min(numNetworks, Bas::WebServer::maxScannedNetworks);
 
-	//	Bas::NetworkInfo scannedNetworks[Bas::WebServer::MAX_SCANNED_NETWORKS];
+		Bas::NetworkInfo scannedNetworks[Bas::WebServer::maxScannedNetworks];
 
-	//	for (size_t i = 0; i < scannedNetworksLength; i++)
-	//	{
-	//		scannedNetworks[i] = Bas::NetworkInfo{ WiFi.SSID(i), WiFi.RSSI(i), WiFi.encryptionType(i) };
-	//	}
+		for (size_t i = 0; i < scannedNetworksLength; i++)
+		{
+			scannedNetworks[i] = Bas::NetworkInfo{ WiFi.SSID(i), WiFi.RSSI(i), WiFi.encryptionType(i) };
+		}
 
-	//	wiFiNetwork.connectAsAccessPoint("Klok");
-	//	mdns.begin("klok.local", wiFiNetwork.getLocalIPAddress());
-	//	webServer.begin(onConfigurationDataReceived, onControlDataReceived, onResetRequested, onCalibrationDataReceived, scannedNetworks, scannedNetworksLength);
-	//	webServer.setPageToServe(Bas::WebServer::page::CONFIGURATION_PAGE);
-	//}
+		wiFiNetwork.connectAsAccessPoint("Klok");
+		mdns.begin("klok.local", wiFiNetwork.getLocalIPAddress());
+		webServer.begin(onConfigurationDataReceived, onControlDataReceived, onResetRequested, onCalibrationDataReceived, scannedNetworks, scannedNetworksLength);
+		webServer.setPageToServe(Bas::WebServer::page::configurationPage);
+	}
 }
 
 void loop()
 {
-	/*clearConfigurationButton.update();
+	clearConfigurationButton.update();
 	wiFiNetwork.update();
 	mdns.update();
-	webServer.update();*/
+	webServer.update();
 	clock.update();	
 	minuteHand.update();	
 	hourHand.update();

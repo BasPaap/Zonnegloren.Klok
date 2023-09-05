@@ -35,11 +35,11 @@ Bas::WebServer::httpMethod Bas::WebServer::getHttpMethod(WiFiClient& client)
 		}
 		else
 		{
-			return UNKNOWN;
+			return unknown;
 		}
 	}
 
-	return UNKNOWN;
+	return unknown;
 }
 
 int Bas::WebServer::getRequestBody(WiFiClient& client, char* body)
@@ -58,7 +58,7 @@ int Bas::WebServer::getRequestBody(WiFiClient& client, char* body)
 			if (lineLength == 0)
 			{
 				// All meta information for the request has been sent, so what will follow is the body.
-				bodyLength = client.readBytes(body, MAX_BODY_LENGTH);				
+				bodyLength = client.readBytes(body, maxBodyLength);				
 			}
 
 			lineLength = 0;			
@@ -80,8 +80,8 @@ void Bas::WebServer::parseConfigurationData(char* body, char* ssid, char* passwo
 	const char* ENCRYPTION_TYPE_TOKEN = "encryption=";
 	const char* KEY_INDEX_TOKEN = "keyIndex=";
 	
-	char encryptionTypeCode[MAX_ENCRYPTION_TYPE_CODE_LENGTH + 1];
-	char keyIndexCode[MAX_KEY_INDEX_LENGTH + 1];
+	char encryptionTypeCode[maxEncryptionTypeCodeLength + 1];
+	char keyIndexCode[maxKeyIndexLength + 1];
 
 	char* token = strtok(body, "&");
 
@@ -116,14 +116,14 @@ void Bas::WebServer::parseConfigurationData(char* body, char* ssid, char* passwo
 	switch (atoi(encryptionTypeCode))
 	{
 	case 1:
-		*encryptionType = Bas::NetworkInfo::WPA;
+		*encryptionType = Bas::NetworkInfo::wpa;
 		break;
 	case 2:
-		*encryptionType = Bas::NetworkInfo::WEP;
+		*encryptionType = Bas::NetworkInfo::wep;
 		break;
 	case 0:
 	default:
-		*encryptionType = Bas::NetworkInfo::NONE;
+		*encryptionType = Bas::NetworkInfo::none;
 		break;
 	}	
 }
@@ -225,7 +225,7 @@ void Bas::WebServer::update()
 	{
 		httpMethod method = getHttpMethod(client);
 				
-		char body[MAX_BODY_LENGTH + 1]{ 0 };
+		char body[maxBodyLength + 1]{ 0 };
 		int bodyLength = getRequestBody(client, body);
 		
 		Serial.println("Web server request received.");
@@ -236,13 +236,13 @@ void Bas::WebServer::update()
 				
 		switch (pageToServe)
 		{
-		case CONFIGURATION_PAGE:
+		case configurationPage:
 
 			if (method == POST)
 			{
-				char ssid[MAX_SSID_LENGTH + 1];
-				char password[MAX_PASSWORD_LENGTH + 1];
-				char domainName[MAX_DOMAIN_NAME_LENGTH + 1];
+				char ssid[maxSsidLength + 1];
+				char password[maxPasswordLength + 1];
+				char domainName[maxDomainNameLength + 1];
 				Bas::NetworkInfo::encryptionType_t encryptionType;
 				uint8_t keyIndex;
 				
@@ -255,7 +255,7 @@ void Bas::WebServer::update()
 				printConfigurationPage(client);
 			}
 			break;
-		case FIRST_CALIBRATION_PAGE:
+		case firstCalibrationPage:
 			if (method != POST)
 			{
 				printFirstCalibrationPage(client);
@@ -265,10 +265,10 @@ void Bas::WebServer::update()
 			{
 				// TODO: get the calibration data from the POST request.
 				calibrationDataReceivedCallback(0, 0);
-				setPageToServe(CONTROL_PAGE); // Serve Control pages from now on.
+				setPageToServe(controlPage); // Serve Control pages from now on.
 				// NOTE: don't break here! We want it to fall through to CONTROL_PAGE.
 			}			
-		case CONTROL_PAGE:			
+		case controlPage:			
 		default:
 			printControlPage(client, IPAddress{ 127,0,0,1 }, 0, 0, 1, 0, 0, 1, 0, 0, 1);
 			break;
@@ -277,7 +277,7 @@ void Bas::WebServer::update()
 		client.println();
 		client.stop();
 
-		if (method == POST && pageToServe == CONFIGURATION_PAGE)
+		if (method == POST && pageToServe == configurationPage)
 		{
 			// Configuration data has been posted so we need to reset the arduino.
 			requestResetCallback();

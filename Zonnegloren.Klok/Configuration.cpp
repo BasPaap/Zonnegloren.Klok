@@ -47,25 +47,25 @@ void Bas::Configuration::writeValue(int address, char* value, size_t valueLength
 
 uint8_t Bas::Configuration::hash(uint8_t value, int salt)
 {
-	return value ^ (HASH_VALUE + salt);
+	return value ^ (hashValue + salt);
 }
 
 void Bas::Configuration::begin()
 {
 	int ssidAddress = 0;
-	if (!readValue(ssidAddress, MAX_SSID_LENGTH, this->ssid))
+	if (!readValue(ssidAddress, maxSsidLength, this->ssid))
 	{
 		return;
 	}
 
 	int passwordAddress = ssidAddress + strlen(this->ssid) + 1;
-	if (!readValue(passwordAddress, MAX_PASSWORD_LENGTH, this->password))
+	if (!readValue(passwordAddress, maxPasswordLength, this->password))
 	{
 		return;
 	}
 	
 	int domainNameAddress = passwordAddress + strlen(password) + 1;
-	if (!readValue(domainNameAddress, MAX_DOMAIN_NAME_LENGTH, this->deviceDomainName))
+	if (!readValue(domainNameAddress, maxDomainNameLength, this->deviceDomainName))
 	{
 		return;
 	}
@@ -73,18 +73,18 @@ void Bas::Configuration::begin()
 	int keyIndexAddress = domainNameAddress + strlen(deviceDomainName) + 1;
 	this->keyIndex = EEPROM.read(keyIndexAddress);
 	
-	int encryptionTypeAddress = keyIndexAddress + MAX_KEY_INDEX_LENGTH;
+	int encryptionTypeAddress = keyIndexAddress + maxKeyIndexLength;
 	switch (EEPROM.read(encryptionTypeAddress))
 	{
 	case 1:
-		this->encryptionType = Bas::NetworkInfo::WPA;
+		this->encryptionType = Bas::NetworkInfo::wpa;
 		break;
 	case 2:
-		this->encryptionType = Bas::NetworkInfo::WEP;
+		this->encryptionType = Bas::NetworkInfo::wep;
 		break;
 	case 0:
 	default:
-		this->encryptionType = Bas::NetworkInfo::NONE;
+		this->encryptionType = Bas::NetworkInfo::none;
 		break;
 	}
 	
@@ -119,12 +119,12 @@ void Bas::Configuration::save()
 		writeValue(passwordAddress, this->password);
 		
 		int domainNameAddress = passwordAddress + strlen(this->password) + 1;
-		writeValue(domainNameAddress, this->deviceDomainName, strlen(this->deviceDomainName) - strlen(DOMAIN_NAME_TLD));
+		writeValue(domainNameAddress, this->deviceDomainName, strlen(this->deviceDomainName) - strlen(domainNameTld));
 		
-		int keyIndexAddress = domainNameAddress + strlen(this->deviceDomainName) - strlen(DOMAIN_NAME_TLD) + 1;
+		int keyIndexAddress = domainNameAddress + strlen(this->deviceDomainName) - strlen(domainNameTld) + 1;
 		EEPROM.put(keyIndexAddress, this->keyIndex);
 		
-		int encryptionTypeAddress = keyIndexAddress + MAX_KEY_INDEX_LENGTH;
+		int encryptionTypeAddress = keyIndexAddress + maxKeyIndexLength;
 		EEPROM.put(encryptionTypeAddress, this->encryptionType);		
 	}	
 }
@@ -169,13 +169,13 @@ void Bas::Configuration::setDeviceDomainName(const char* deviceDomainName)
 	strcpy(this->deviceDomainName, deviceDomainName);
 		
 	// Ensure that the domain name ends in .local
-	if (strlen(deviceDomainName) < strlen(DOMAIN_NAME_TLD + 1)) // The domain name should be at least 7 characters: a.local		
+	if (strlen(deviceDomainName) < strlen(domainNameTld + 1)) // The domain name should be at least 7 characters: a.local		
 	{
-		strcat(this->deviceDomainName, DOMAIN_NAME_TLD);
+		strcat(this->deviceDomainName, domainNameTld);
 	}
-	else if (strcmp(DOMAIN_NAME_TLD, this->deviceDomainName + (strlen(this->deviceDomainName) - 6)) != 0)
+	else if (strcmp(domainNameTld, this->deviceDomainName + (strlen(this->deviceDomainName) - 6)) != 0)
 	{		
-		strcat(this->deviceDomainName, DOMAIN_NAME_TLD);
+		strcat(this->deviceDomainName, domainNameTld);
 	}
 }
 

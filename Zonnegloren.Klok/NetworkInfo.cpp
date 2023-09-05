@@ -10,19 +10,19 @@ Bas::NetworkInfo::NetworkInfo()
 
 Bas::NetworkInfo::NetworkInfo(const char* ssid, int32_t rssi, uint8_t encryptionType) : rssi(rssi)
 {
-	strncpy(this->ssid, ssid, MAX_SSID_LENGTH);
+	strncpy(this->ssid, ssid, maxSsidLength);
 
 	switch (encryptionType)
 	{
 	case 2:
 	case 4:
-		this->encryptionType = WPA;
+		this->encryptionType = wpa;
 		break;
 	case 5:
-		this->encryptionType = WEP;
+		this->encryptionType = wep;
 		break;
 	default:
-		this->encryptionType = NONE;
+		this->encryptionType = none;
 			break;
 	}
 }

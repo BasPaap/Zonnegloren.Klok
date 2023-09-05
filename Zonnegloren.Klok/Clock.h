@@ -15,10 +15,10 @@ namespace Bas
 {
 	class Clock
 	{
-		const int NUM_HOURS_IN_DAY = 12;
-		const int NUM_MINUTES_IN_HOUR = 60;
-		const int NUM_SECONDS_IN_MINUTE = 60;
-		const int NUM_MILLISECONDS_IN_SECOND = 1000;
+		const int numHoursInDay = 12;
+		const int numMinutesInHour = 60;
+		const int numSecondsInMinute = 60;
+		const int numMillisecondsInSecond = 1000;
 				
 		Time time{ 0, 0 };
 		float constantSpeed = 1;

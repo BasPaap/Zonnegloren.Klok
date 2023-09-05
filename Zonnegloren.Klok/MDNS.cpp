@@ -1,7 +1,3 @@
-// 
-// 
-// 
-
 #include "MDNS.h"
 #include "MdnsHeader.h"
 
@@ -15,7 +11,7 @@ void Bas::Mdns::begin(char domainName[], IPAddress localIPAddress)
 	Serial.print(" on ");
 	Serial.println(this->localIPAddress);
 
-	udp.beginMulticast(MDNS_ADDRESS, MDNS_PORT);
+	udp.beginMulticast(mdnsAddress, mdnsPort);
 }
 
 void Bas::Mdns::update()
@@ -23,15 +19,15 @@ void Bas::Mdns::update()
 	// if there's data available, read a packet
 	int packetBufferSize = udp.parsePacket();
 
-	if (packetBufferSize && packetBufferSize <= MAX_DNS_PACKET_SIZE)
+	if (packetBufferSize && packetBufferSize <= maxDnsPacketSize)
 	{
 		// read the packet into packetBufffer
-		unsigned char packetBuffer[MAX_DNS_PACKET_SIZE];
+		unsigned char packetBuffer[maxDnsPacketSize];
 		int totalBytesRead = 0;
 
 		do
 		{
-			int numBytesRead = udp.read(packetBuffer + totalBytesRead, MAX_DNS_PACKET_SIZE);
+			int numBytesRead = udp.read(packetBuffer + totalBytesRead, maxDnsPacketSize);
 			totalBytesRead += numBytesRead;
 		} while (totalBytesRead < packetBufferSize);
 
@@ -51,11 +47,11 @@ void Bas::Mdns::handleMdnsPacket(const unsigned char packetBuffer[], int packetB
 
 	if (mdnsHeader.getIsQuery() && mdnsHeader.getNumQuestions() > 0)
 	{
-		int questionByteIndex = Bas::MdnsHeader::NUM_BYTES_IN_HEADER;
+		int questionByteIndex = Bas::MdnsHeader::numBytesInHeader;
 
 		for (size_t i = 0; i < mdnsHeader.getNumQuestions(); i++)
 		{
-			if (packetBuffer[questionByteIndex] > MAX_LABEL_LENGTH && packetBuffer[questionByteIndex] >> 6 != 0b11) // If the label is larger than the possible length and this is not a compression label, ignore the rest because something is messed up.
+			if (packetBuffer[questionByteIndex] > maxLabelLength && packetBuffer[questionByteIndex] >> 6 != 0b11) // If the label is larger than the possible length and this is not a compression label, ignore the rest because something is messed up.
 			{
 				Serial.println("Incorrect label length, ignoring the rest of the message.");
 				break;
@@ -63,7 +59,7 @@ void Bas::Mdns::handleMdnsPacket(const unsigned char packetBuffer[], int packetB
 
 			questionByteIndex = handleMdnsQuestion(packetBuffer, packetBufferSize, questionByteIndex);
 
-			if (questionByteIndex == IGNORE_FURTHER_QUESTIONS)
+			if (questionByteIndex == ignoreFurtherQuestions)
 			{
 				break;
 			}
@@ -86,10 +82,10 @@ int Bas::Mdns::handleMdnsQuestion(const unsigned char packetBuffer[], int packet
 		Serial.print(questionFirstByteIndex);
 		Serial.print(", packet buffer size: ");
 		Serial.println(packetBufferSize);
-		return IGNORE_FURTHER_QUESTIONS;
+		return ignoreFurtherQuestions;
 	}
 		
-	char domainName[MAX_DOMAIN_NAME_LENGTH + 1];
+	char domainName[maxDomainNameLength + 1];
 	uint8_t domainNameFieldLength = 0;
 
 	getRequestedDomainName(packetBuffer, questionFirstByteIndex, domainName, &domainNameFieldLength);
@@ -103,7 +99,7 @@ int Bas::Mdns::handleMdnsQuestion(const unsigned char packetBuffer[], int packet
 
 	if (strcasecmp(deviceDomainName, domainName) == 0) // if this is a query for our domain name
 	{
-		if (queryType == QUERY_TYPE_A || queryType == QUERY_TYPE_HTTPS)
+		if (queryType == queryTypeA || queryType == queryTypeHttps)
 		{
 			uint16_t queryClass = packetBuffer[questionFirstByteIndex + domainNameFieldLength + 2] << 8 | packetBuffer[questionFirstByteIndex + domainNameFieldLength + 3];
 			bool isUnicast = (queryClass >> 15) & 0x01;
@@ -121,29 +117,29 @@ int Bas::Mdns::handleMdnsQuestion(const unsigned char packetBuffer[], int packet
 			mdnsResponseHeader.setNumAdditionalResourceRecords(0);
 			Bas::MdnsHeader::rawMdnsHeader_t rawResponseHeader = mdnsResponseHeader.getRawMdnsHeader();
 
-			const int QUERYTYPE_SIZE = 2;
-			const int QUERYCLASS_SIZE = 2;
-			const int TTL_SIZE = 4;
-			const int RDLENGTH_SIZE = 2;
+			const int queryTypeSize = 2;
+			const int queryClassSize = 2;
+			const int ttlSize = 4;
+			const int rdLengthSize = 2;
 
 			const uint32_t ttl = 60;
 			const uint16_t rdLength = 4;
 			uint8_t rData[rdLength];
 			
-			unsigned char dnsDomainName[MAX_DOMAIN_NAME_LENGTH];
+			unsigned char dnsDomainName[maxDomainNameLength];
 			int dnsDomainNameSize;
 			domainNameToDnsDomainName(deviceDomainName, dnsDomainName, &dnsDomainNameSize);
 
-			uint8_t queryTypeBytes[QUERYTYPE_SIZE];
+			uint8_t queryTypeBytes[queryTypeSize];
 			uint16ToByteArray(queryType, queryTypeBytes);
 
-			uint8_t queryClassBytes[QUERYCLASS_SIZE];
+			uint8_t queryClassBytes[queryClassSize];
 			uint16ToByteArray(queryClass, queryClassBytes);
 
-			uint8_t ttlBytes[TTL_SIZE];
+			uint8_t ttlBytes[ttlSize];
 			uint32ToByteArray(ttl, ttlBytes);
 
-			uint8_t rdLengthBytes[RDLENGTH_SIZE];
+			uint8_t rdLengthBytes[rdLengthSize];
 			uint16ToByteArray(rdLength, rdLengthBytes);
 
 			for (size_t i = 0; i < rdLength; i++)
@@ -151,20 +147,20 @@ int Bas::Mdns::handleMdnsQuestion(const unsigned char packetBuffer[], int packet
 				rData[i] = localIPAddress[i];
 			}
 
-			int replySize = Bas::MdnsHeader::NUM_BYTES_IN_HEADER + dnsDomainNameSize + QUERYTYPE_SIZE + QUERYCLASS_SIZE + TTL_SIZE + +RDLENGTH_SIZE + rdLength;
+			int replySize = Bas::MdnsHeader::numBytesInHeader + dnsDomainNameSize + queryTypeSize + queryClassSize + ttlSize + +rdLengthSize + rdLength;
 
-			uint8_t replyBuffer[MAX_DNS_PACKET_SIZE];
+			uint8_t replyBuffer[maxDnsPacketSize];
 
-			memcpy(replyBuffer, &rawResponseHeader, Bas::MdnsHeader::NUM_BYTES_IN_HEADER);
-			memcpy(replyBuffer + Bas::MdnsHeader::NUM_BYTES_IN_HEADER, dnsDomainName, dnsDomainNameSize);
-			memcpy(replyBuffer + Bas::MdnsHeader::NUM_BYTES_IN_HEADER + dnsDomainNameSize, queryTypeBytes, QUERYTYPE_SIZE);
-			memcpy(replyBuffer + Bas::MdnsHeader::NUM_BYTES_IN_HEADER + dnsDomainNameSize + QUERYTYPE_SIZE, queryClassBytes, QUERYCLASS_SIZE);
-			memcpy(replyBuffer + Bas::MdnsHeader::NUM_BYTES_IN_HEADER + dnsDomainNameSize + QUERYTYPE_SIZE + QUERYCLASS_SIZE, ttlBytes, TTL_SIZE);
-			memcpy(replyBuffer + Bas::MdnsHeader::NUM_BYTES_IN_HEADER + dnsDomainNameSize + QUERYTYPE_SIZE + QUERYCLASS_SIZE + TTL_SIZE, rdLengthBytes, RDLENGTH_SIZE);
-			memcpy(replyBuffer + Bas::MdnsHeader::NUM_BYTES_IN_HEADER + dnsDomainNameSize + QUERYTYPE_SIZE + QUERYCLASS_SIZE + TTL_SIZE + RDLENGTH_SIZE, rData, rdLength);
+			memcpy(replyBuffer, &rawResponseHeader, Bas::MdnsHeader::numBytesInHeader);
+			memcpy(replyBuffer + Bas::MdnsHeader::numBytesInHeader, dnsDomainName, dnsDomainNameSize);
+			memcpy(replyBuffer + Bas::MdnsHeader::numBytesInHeader + dnsDomainNameSize, queryTypeBytes, queryTypeSize);
+			memcpy(replyBuffer + Bas::MdnsHeader::numBytesInHeader + dnsDomainNameSize + queryTypeSize, queryClassBytes, queryClassSize);
+			memcpy(replyBuffer + Bas::MdnsHeader::numBytesInHeader + dnsDomainNameSize + queryTypeSize + queryClassSize, ttlBytes, ttlSize);
+			memcpy(replyBuffer + Bas::MdnsHeader::numBytesInHeader + dnsDomainNameSize + queryTypeSize + queryClassSize + ttlSize, rdLengthBytes, rdLengthSize);
+			memcpy(replyBuffer + Bas::MdnsHeader::numBytesInHeader + dnsDomainNameSize + queryTypeSize + queryClassSize + ttlSize + rdLengthSize, rData, rdLength);
 
-			IPAddress destinationAddress = isUnicast ? udp.remoteIP() : MDNS_ADDRESS;
-			uint16_t destinationPort = isUnicast ? udp.remotePort() : MDNS_PORT;
+			IPAddress destinationAddress = isUnicast ? udp.remoteIP() : mdnsAddress;
+			uint16_t destinationPort = isUnicast ? udp.remotePort() : mdnsPort;
 
 			Serial.print("\tSending response to ");
 			Serial.println(destinationAddress);
@@ -252,10 +248,10 @@ const char* Bas::Mdns::getQueryTypeName(uint16_t queryType)
 {
 	switch (queryType)
 	{
-	case QUERY_TYPE_A:
+	case queryTypeA:
 		return "A";
 
-	case QUERY_TYPE_HTTPS:
+	case queryTypeHttps:
 		return "HTTPS";
 
 	default:

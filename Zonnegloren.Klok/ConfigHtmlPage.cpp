@@ -8,13 +8,13 @@ void Bas::WebServer::printWiFiOption(WiFiClient& client, const char* ssid, int32
 
 	switch (encryptionType)
 	{
-	case Bas::NetworkInfo::encryptionType_t::WPA:
+	case Bas::NetworkInfo::encryptionType_t::wpa:
 		client.print("WPA");
 		break;
-	case Bas::NetworkInfo::encryptionType_t::WEP:
+	case Bas::NetworkInfo::encryptionType_t::wep:
 		client.print("WEP");
 		break;
-	case Bas::NetworkInfo::encryptionType_t::NONE:
+	case Bas::NetworkInfo::encryptionType_t::none:
 	default:
 		client.print("none");
 		break;
@@ -26,13 +26,13 @@ void Bas::WebServer::printWiFiOption(WiFiClient& client, const char* ssid, int32
 
 	switch (encryptionType)
 	{
-	case Bas::NetworkInfo::encryptionType_t::WPA:
+	case Bas::NetworkInfo::encryptionType_t::wpa:
 		client.print("WPA");
 		break;
-	case Bas::NetworkInfo::encryptionType_t::WEP:
+	case Bas::NetworkInfo::encryptionType_t::wep:
 		client.print("WEP");
 		break;
-	case Bas::NetworkInfo::encryptionType_t::NONE:
+	case Bas::NetworkInfo::encryptionType_t::none:
 	default:
 		client.print("public");
 		break;

@@ -28,13 +28,13 @@ void Bas::WiFiNetwork::connectAsClient(const char* ssid, const char* password, u
 		
 		switch (encryptionType)
 		{
-		case Bas::NetworkInfo::WPA:
+		case Bas::NetworkInfo::wpa:
 			wiFiStatus = WiFi.begin(ssid, password); // Connect to WPA/WPA2 network.
 			break;
-		case Bas::NetworkInfo::WEP:
+		case Bas::NetworkInfo::wep:
 			wiFiStatus = WiFi.begin(ssid, keyIndex, password); // Connect to WEP network.
 			break;
-		case Bas::NetworkInfo::NONE:
+		case Bas::NetworkInfo::none:
 		default:
 			wiFiStatus = WiFi.begin(ssid); // Connect to public network
 			break;

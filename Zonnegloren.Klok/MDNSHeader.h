@@ -52,7 +52,7 @@ namespace Bas
 		int numAdditionalResourceRecords;
 
 	public:
-		static const int NUM_BYTES_IN_HEADER = 12;
+		static const int numBytesInHeader = 12;
 
 		MdnsHeader(const unsigned char bytes[]);
 		rawMdnsHeader_t getRawMdnsHeader();

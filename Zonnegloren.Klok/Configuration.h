@@ -15,18 +15,18 @@ namespace Bas
 {
 	class Configuration
 	{
-		static const int MAX_SSID_LENGTH = 32;
-		static const int MAX_PASSWORD_LENGTH = 63;
-		static const int MAX_DOMAIN_NAME_LENGTH = 253;
-		static const int MAX_KEY_INDEX_LENGTH = 1;
-		static const int MAX_ENCRYPTION_TYPE_LENGTH = 1;
+		static const int maxSsidLength = 32;
+		static const int maxPasswordLength = 63;
+		static const int maxDomainNameLength = 253;
+		static const int maxKeyIndexLength = 1;
+		static const int maxEncryptionTypeLength = 1;
 
-		static const char HASH_VALUE = 'B';
-		const char* DOMAIN_NAME_TLD = ".local";
+		static const char hashValue = 'B';
+		const char* domainNameTld = ".local";
 
-		char ssid[MAX_SSID_LENGTH + 1];
-		char password[MAX_PASSWORD_LENGTH + 1];
-		char deviceDomainName[MAX_DOMAIN_NAME_LENGTH + 1];
+		char ssid[maxSsidLength + 1];
+		char password[maxPasswordLength + 1];
+		char deviceDomainName[maxDomainNameLength + 1];
 		Bas::NetworkInfo::encryptionType_t encryptionType;
 		uint8_t keyIndex;
 
