@@ -72,13 +72,31 @@ int Bas::WebServer::getRequestBody(WiFiClient& client, char* body)
 	return bodyLength;
 }
 
+void Bas::WebServer::parseTime(char* time, uint8_t* hours, uint8_t* minutes)
+{
+	const int maxHoursCharacters{ 2 };
+	char hoursToken[maxHoursCharacters + 1];
+	hoursToken[0] = time[0];
+	hoursToken[1] = time[1];
+	hoursToken[2] = 0;
+
+	const int maxMinutesCharacters{ 2 };
+	char minutesToken[maxMinutesCharacters + 1];
+	minutesToken[0] = time[3];
+	minutesToken[1] = time[4];
+	minutesToken[2] = 0;
+
+	*hours = atoi(hoursToken);
+	*minutes = atoi(minutesToken);
+}
+
 void Bas::WebServer::parseConfigurationData(char* body, char* ssid, char* password, char* domainName, Bas::NetworkInfo::encryptionType_t* encryptionType, uint8_t* keyIndex)
 {
-	const char* SSID_TOKEN = "ssid=";
-	const char* PASSWORD_TOKEN = "password=";
-	const char* DOMAIN_NAME_TOKEN = "domainName=";
-	const char* ENCRYPTION_TYPE_TOKEN = "encryption=";
-	const char* KEY_INDEX_TOKEN = "keyIndex=";
+	const char* ssidToken = "ssid=";
+	const char* passwordToken = "password=";
+	const char* domainNameToken = "domainName=";
+	const char* encryptionTypeToken = "encryption=";
+	const char* keyIndexToken = "keyIndex=";
 	
 	char encryptionTypeCode[maxEncryptionTypeCodeLength + 1];
 	char keyIndexCode[maxKeyIndexLength + 1];
@@ -87,25 +105,25 @@ void Bas::WebServer::parseConfigurationData(char* body, char* ssid, char* passwo
 
 	while (token != NULL)
 	{
-		if (startswith(token, SSID_TOKEN))
+		if (startswith(token, ssidToken))
 		{
-			urlDecode(token + strlen(SSID_TOKEN), ssid);			
+			urlDecode(token + strlen(ssidToken), ssid);			
 		}
-		else if (startswith(token, PASSWORD_TOKEN))
+		else if (startswith(token, passwordToken))
 		{
-			urlDecode(token + strlen(PASSWORD_TOKEN), password);
+			urlDecode(token + strlen(passwordToken), password);
 		}
-		else if (startswith(token, DOMAIN_NAME_TOKEN))
+		else if (startswith(token, domainNameToken))
 		{
-			urlDecode(token + strlen(DOMAIN_NAME_TOKEN), domainName);			
+			urlDecode(token + strlen(domainNameToken), domainName);			
 		}
-		else if (startswith(token, ENCRYPTION_TYPE_TOKEN))
+		else if (startswith(token, encryptionTypeToken))
 		{
-			urlDecode(token + strlen(ENCRYPTION_TYPE_TOKEN), encryptionTypeCode);
+			urlDecode(token + strlen(encryptionTypeToken), encryptionTypeCode);
 		}
-		else if (startswith(token, KEY_INDEX_TOKEN))
+		else if (startswith(token, keyIndexToken))
 		{
-			urlDecode(token + strlen(KEY_INDEX_TOKEN), keyIndexCode);
+			urlDecode(token + strlen(keyIndexToken), keyIndexCode);
 		}
 
 		token = strtok(NULL, "&");
@@ -126,6 +144,27 @@ void Bas::WebServer::parseConfigurationData(char* body, char* ssid, char* passwo
 		*encryptionType = Bas::NetworkInfo::none;
 		break;
 	}	
+}
+
+void Bas::WebServer::parseCalibrationData(char* body, uint8_t* hours, uint8_t* minutes)
+{
+	const char* timeToken = "time=";
+	char* token = strtok(body, "&");
+
+	const int maxTimeCharacters{ 5 };
+	char time[maxTimeCharacters + 1];
+
+	while (token != NULL)
+	{
+		if (startswith(token, timeToken))
+		{
+			urlDecode(token + strlen(timeToken), time);
+		}		
+
+		token = strtok(NULL, "&");
+	}
+
+	parseTime(time, hours, minutes);
 }
 
 void Bas::WebServer::urlDecode(const char* input, char* output)
@@ -197,7 +236,7 @@ void Bas::WebServer::begin(ConfigurationDataReceivedCallbackPointer onConfigurat
 	this->onConfigurationDataReceivedCallback = onConfigurationDataReceivedCallback;
 	this->onControlDataReceivedCallback = onControlDataReceivedCallback;
 	this->requestResetCallback = requestResetCallback;
-	this->calibrationDataReceivedCallback = onCalibrationDataReceivedCallback;
+	this->onCalibrationDataReceivedCallback = onCalibrationDataReceivedCallback;
 	
 	server.begin();
 }
@@ -256,20 +295,30 @@ void Bas::WebServer::update()
 			}
 			break;
 		case firstCalibrationPage:
-			if (method != POST)
+			if (method == POST)
 			{
-				printFirstCalibrationPage(client);
+				uint8_t hours;
+				uint8_t minutes;
+
+				parseCalibrationData(body, &hours, &minutes);
+				this->onCalibrationDataReceivedCallback(hours, minutes);
+				setPageToServe(controlPage); // Serve Control pages from now on.
+				printControlPage(client, IPAddress{ 127,0,0,1 }, hours, minutes, 1, 0, 0, 1, 0, 0, 1);
 				break;
 			}
 			else
-			{
-				// TODO: get the calibration data from the POST request.
-				calibrationDataReceivedCallback(0, 0);
-				setPageToServe(controlPage); // Serve Control pages from now on.
-				// NOTE: don't break here! We want it to fall through to CONTROL_PAGE.
+			{	
+				printFirstCalibrationPage(client);
+				break;				
 			}			
 		case controlPage:			
 		default:
+
+			if (method == POST)
+			{
+				onControlDataReceivedCallback();
+			}
+
 			printControlPage(client, IPAddress{ 127,0,0,1 }, 0, 0, 1, 0, 0, 1, 0, 0, 1);
 			break;
 		}
