@@ -24,7 +24,6 @@ namespace Bas
 		const int maxKeyIndexLength = 1;
 
 		using ConfigurationDataReceivedCallbackPointer = void(*)(const char* ssid, const char* password, uint8_t keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName);
-		using ControlDataReceivedCallbackPointer = void(*)();
 		using RequestResetCallbackPointer = void(*)();
 		using CalibrationDataReceivedCallbackPointer = void(*)(uint8_t hours, uint8_t minutes);
 		
@@ -44,7 +43,6 @@ namespace Bas
 		Bas::NetworkInfo scannedNetworks[maxScannedNetworks];
 		int scannedNetworksLength = 0;
 		ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback;
-		ControlDataReceivedCallbackPointer onControlDataReceivedCallback;
 		RequestResetCallbackPointer requestResetCallback;
 		CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback;
 
@@ -69,8 +67,8 @@ namespace Bas
 
 	public:
 		WebServer();
-		void begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback);
-		void begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength);
+		void begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback);
+		void begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength);
 		void update(IPAddress localIPAddress, uint8_t currentHours, uint8_t currentMinutes, float constantSpeed, uint8_t startHours, uint8_t startMinutes, float variableStartSpeed, uint8_t endHours, uint8_t endMinutes, float variableEndSpeed);
 		void setPageToServe(page pageToServe);
 	};
