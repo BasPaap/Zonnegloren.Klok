@@ -314,12 +314,22 @@ void Bas::WebServer::update()
 		case controlPage:			
 		default:
 
+			uint8_t hours{ 0 };
+			uint8_t minutes{ 0 };
+			float constantSpeed{ 1 };
+			uint8_t startHours{ 0 };
+			uint8_t startMinutes{ 0 };
+			float variableStartSpeed{ 1 };
+			uint8_t endHours{ 0 };
+			uint8_t endMinutes{ 0 };
+			float variableEndSpeed{ 1 };
+
 			if (method == POST)
-			{
+			{				
 				onControlDataReceivedCallback();
 			}
 
-			printControlPage(client, IPAddress{ 127,0,0,1 }, 0, 0, 1, 0, 0, 1, 0, 0, 1);
+			printControlPage(client, IPAddress{ 127,0,0,1 }, hours, minutes, constantSpeed, startHours, startMinutes, variableStartSpeed, endHours, endMinutes, variableEndSpeed);
 			break;
 		}
 

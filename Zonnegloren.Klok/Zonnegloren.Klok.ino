@@ -82,10 +82,10 @@ void loop()
 	clearConfigurationButton.update();
 	wiFiNetwork.update();
 	mdns.update();
-	webServer.update();
 	clock.update();	
 	minuteHand.update();	
 	hourHand.update();
+	webServer.update();
 }
 
 void onConfigurationDataReceived(const char* ssid, const char* password, uint8_t keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName)
@@ -101,15 +101,14 @@ void onConfigurationDataReceived(const char* ssid, const char* password, uint8_t
 void onCalibrationDataReceived(uint8_t hours, uint8_t minutes)
 {
 	Serial.print("Calibration data received.");
-	// clock.calibrate(hours, minutes);
+	hourHand.calibrate(hours);
+	minuteHand.calibrate(minutes);
 }
 
 void onControlDataReceived()
 {
 
 }
-
-
 
 void onConnectionFailure()
 {

@@ -1,6 +1,6 @@
 #include "WebServer.h"
 
-void Bas::WebServer::printControlPage(WiFiClient& client, IPAddress localIpAddress, uint8_t hours, uint8_t minutes, float speed, uint8_t startHours, uint8_t startMinutes, float startSpeed, uint8_t endHours, uint8_t endMinutes, float endSpeed)
+void Bas::WebServer::printControlPage(WiFiClient& client, IPAddress localIpAddress, uint8_t hours, uint8_t minutes, float constantSpeed, uint8_t startHours, uint8_t startMinutes, float variableStartSpeed, uint8_t endHours, uint8_t endMinutes, float variableEndSpeed)
 {
 	printPageHeader(client, "Sanatorium Zonnegloren: De Klok");
 
