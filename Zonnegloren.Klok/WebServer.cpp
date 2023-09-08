@@ -35,11 +35,36 @@ Bas::WebServer::httpMethod Bas::WebServer::getHttpMethod(WiFiClient& client)
 		}
 		else
 		{
-			return unknown;
+			return httpMethod::unknown;
 		}
 	}
 
-	return unknown;
+	return httpMethod::unknown;
+}
+
+Bas::WebServer::controlFormType Bas::WebServer::getControlFormType(const char* body)
+{
+		if (strcmp("timeForm", body) == 0)
+		{
+			return controlFormType::time;
+		}
+		else if (strcmp("speedForm", body) == 0)
+		{
+			return controlFormType::constantSpeed;
+		}
+		else if (strcmp("variableSpeedForm", body) == 0)
+		{
+			return controlFormType::variableSpeed;
+		}
+		else if (strcmp("calibrationForm", body) == 0)
+		{
+			return controlFormType::calibration;
+		}
+		else
+		{
+			return controlFormType::unknown;
+		}
+
 }
 
 int Bas::WebServer::getRequestBody(WiFiClient& client, char* body)
@@ -146,7 +171,7 @@ void Bas::WebServer::parseConfigurationData(char* body, char* ssid, char* passwo
 	}	
 }
 
-void Bas::WebServer::parseCalibrationData(char* body, uint8_t* hours, uint8_t* minutes)
+void Bas::WebServer::parseTimeData(char* body, uint8_t* hours, uint8_t* minutes)
 {
 	const char* timeToken = "time=";
 	char* token = strtok(body, "&");
@@ -165,6 +190,71 @@ void Bas::WebServer::parseCalibrationData(char* body, uint8_t* hours, uint8_t* m
 	}
 
 	parseTime(time, hours, minutes);
+}
+
+void Bas::WebServer::parseConstantSpeedData(char* body, float* constantSpeed)
+{
+	const char* speedToken = "speed=";
+	char* token = strtok(body, "&");
+
+	const int maxSpeedCharacters{ 10 };
+	char speed[maxSpeedCharacters + 1];
+
+	while (token != NULL)
+	{
+		if (startswith(token, speedToken))
+		{
+			urlDecode(token + strlen(speedToken), speed);
+		}
+
+		token = strtok(NULL, "&");
+	}
+
+	*speed = atof(speed);
+}
+
+void Bas::WebServer::parseVariableSpeedData(char* body, uint8_t* startHours, uint8_t* startMinutes, float* variableStartSpeed, uint8_t* endHours, uint8_t* endMinutes, float* variableEndSpeed)
+{
+	const char* startTimeToken = "startTime=";
+	const char* startSpeedToken = "startSpeed=";
+	const char* endTimeToken = "endTime=";
+	const char* endSpeedToken = "endSpeed=";
+		
+	const int maxTimeCharacters{ 5 };
+	char startTime[maxTimeCharacters + 1];
+	char endTime[maxTimeCharacters + 1];
+	const int maxSpeedCharacters{ 10 };
+	char startSpeed[maxSpeedCharacters + 1];
+	char endSpeed[maxSpeedCharacters + 1];
+
+	char* token = strtok(body, "&");
+
+	while (token != NULL)
+	{
+		if (startswith(token, startTimeToken))
+		{
+			urlDecode(token + strlen(startTimeToken), startTime);
+		}
+		else if (startswith(token, startSpeedToken))
+		{
+			urlDecode(token + strlen(startSpeedToken), startSpeed);
+		}
+		else if (startswith(token, endTimeToken))
+		{
+			urlDecode(token + strlen(endTimeToken), endTime);
+		}
+		else if (startswith(token, endSpeedToken))
+		{
+			urlDecode(token + strlen(endSpeedToken), endSpeed);
+		}
+
+		token = strtok(NULL, "&");
+	}
+
+	parseTime(startTime, startHours, startMinutes);
+	*variableStartSpeed = atof(startSpeed);
+	parseTime(endTime, endHours, endMinutes);
+	*variableEndSpeed = atof(endSpeed);
 }
 
 void Bas::WebServer::urlDecode(const char* input, char* output)
@@ -300,7 +390,7 @@ void Bas::WebServer::update()
 				uint8_t hours;
 				uint8_t minutes;
 
-				parseCalibrationData(body, &hours, &minutes);
+				parseTimeData(body, &hours, &minutes);
 				this->onCalibrationDataReceivedCallback(hours, minutes);
 				setPageToServe(controlPage); // Serve Control pages from now on.
 				printControlPage(client, IPAddress{ 127,0,0,1 }, hours, minutes, 1, 0, 0, 1, 0, 0, 1);
@@ -323,9 +413,33 @@ void Bas::WebServer::update()
 			uint8_t endHours{ 0 };
 			uint8_t endMinutes{ 0 };
 			float variableEndSpeed{ 1 };
+			uint8_t calibrationHours{ 0 };
+			uint8_t calibrationMinutes{ 0 };
 
 			if (method == POST)
 			{				
+				controlFormType formType = getControlFormType(body);
+
+				switch (formType)
+				{
+				case controlFormType::time:
+					parseTimeData(body, &hours, &minutes);
+					break;
+				case controlFormType::constantSpeed:
+					parseConstantSpeedData(body, &constantSpeed);
+					break;
+				case controlFormType::variableSpeed:
+					parseVariableSpeedData(body, &startHours, &startMinutes, &variableStartSpeed, &endHours, &endMinutes, &variableEndSpeed);
+					break;
+				case controlFormType::calibration:
+					parseTimeData(body, &calibrationHours, &calibrationMinutes);
+					onCalibrationDataReceived(calibrationHours, calibrationMinutes);
+					break;
+				case controlFormType::unknown:
+				default:
+					break;
+				}
+
 				onControlDataReceivedCallback();
 			}
 

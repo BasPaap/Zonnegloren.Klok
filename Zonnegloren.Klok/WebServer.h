@@ -27,15 +27,19 @@ namespace Bas
 		using ControlDataReceivedCallbackPointer = void(*)();
 		using RequestResetCallbackPointer = void(*)();
 		using CalibrationDataReceivedCallbackPointer = void(*)(uint8_t hours, uint8_t minutes);
+		
 	public:
-		typedef enum { configurationPage, firstCalibrationPage, controlPage } page;
-		typedef enum { unknown, GET, POST, PUT, PATCH, DELETE } httpMethod;
+		enum page { configurationPage, firstCalibrationPage, controlPage };
+		enum httpMethod { unknown, GET, POST, PUT, PATCH, DELETE };
+		
 		static const int maxScannedNetworks = 20;
 		static const int maxBodyLength = 255;
 
 	private:		
 		WiFiServer server{ 80 };
 		page pageToServe;
+
+		enum controlFormType { unknown, time, constantSpeed, variableSpeed, calibration };
 		
 		Bas::NetworkInfo scannedNetworks[maxScannedNetworks];
 		int scannedNetworksLength = 0;
@@ -44,6 +48,7 @@ namespace Bas
 		RequestResetCallbackPointer requestResetCallback;
 		CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback;
 
+		controlFormType getControlFormType(const char* body);
 		void printPageHeader(WiFiClient& client, const char* title);
 		void printPageFooter(WiFiClient& client);
 		void printWiFiOption(WiFiClient& client, const char* ssid, int32_t rssi, Bas::NetworkInfo::encryptionType_t encryptionType);
@@ -55,7 +60,9 @@ namespace Bas
 		int getRequestBody(WiFiClient& client, char* body);
 		void parseTime(char* time, uint8_t* hours, uint8_t* minutes);
 		void parseConfigurationData(char* body, char* ssid, char* password, char* domainName, Bas::NetworkInfo::encryptionType_t* encryptionType, uint8_t* keyIndex);
-		void parseCalibrationData(char* body, uint8_t* hours, uint8_t* minutes);
+		void parseTimeData(char* body, uint8_t* hours, uint8_t* minutes);
+		void parseConstantSpeedData(char* body, float* constantSpeed);
+		void parseVariableSpeedData(char* body, uint8_t* startHours, uint8_t* startMinutes, float* variableStartSpeed, uint8_t* endHours, uint8_t* endMinutes, float* variableEndSpeed);
 		bool startswith(const char* string, const char* prefix);
 		void urlDecode(const char* input, char* output);
 		unsigned char h2int(char c);

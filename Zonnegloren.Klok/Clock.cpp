@@ -123,9 +123,9 @@ void Bas::Clock::update()
 		}
 	}
 
-	Serial.print(time.hour());
+	/*Serial.print(time.hour());
 	Serial.print(":");
 	Serial.print(time.minute());
 	Serial.print(":");
-	Serial.println(time.second());
+	Serial.println(time.second());*/
 }

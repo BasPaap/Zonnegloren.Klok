@@ -36,7 +36,7 @@ void Bas::WebServer::printControlPage(WiFiClient& client, IPAddress localIpAddre
 		"    <form action=\"\" method=\"post\">\n"\
 		"        <fieldset>\n"\
 		"            <legend>Snelheid</legend>\n"\
-		"            <input type=\"number\" id=\"speed\" name=\"speed\" class=\"speed\" value=\"1\">\n"\
+		"            <input type=\"number\" maxlength=\"10\" id=\"speed\" name=\"speed\" class=\"speed\" value=\"1\">\n"\
 		"            <button name=\"submit\" value=\"speedForm\" type=\"submit\">Snelheid aanpassen</button>\n"\
 		"            <p class=\"explanation\">Het aantal seconden per seconde, mag negatief zijn. 1 = normaal, -1 is normaal maar achteruit, 0.5 is half zo snel als normaal, enzovoort.</p>\n"\
 		"            <p class=\"explanation\">Deze snelheid wordt niet gebruikt als een variabele snelheid (zie hieronder) actief is!</p>\n"\
@@ -52,9 +52,9 @@ void Bas::WebServer::printControlPage(WiFiClient& client, IPAddress localIpAddre
 		"                tot\n"\
 		"                <input type=\"time\" id=\"endTime\" name=\"endTime\" value=\"04:20\" title=\"starttijd\" placeholder=\"4:20\">\n"\
 		"                moet de snelheid lineair aangepast worden van\n"\
-		"                <input type=\"number\" id=\"startSpeed\" name=\"startSpeed\" class=\"speed\" value=\"1\" title=\"startsnelheid\" placeholder=\"1\">\n"\
+		"                <input type=\"number\" maxlength=\"10\" id=\"startSpeed\" name=\"startSpeed\" class=\"speed\" value=\"1\" title=\"startsnelheid\" placeholder=\"1\">\n"\
 		"                naar\n"\
-		"                <input type=\"number\" id=\"endSpeed\" name=\"endSpeed\" class=\"speed\" value=\"0.5\" title=\"eindsnelheid\" placeholder=\"0.5\">.\n"\
+		"                <input type=\"number\" maxlength=\"10\" id=\"endSpeed\" name=\"endSpeed\" class=\"speed\" value=\"0.5\" title=\"eindsnelheid\" placeholder=\"0.5\">.\n"\
 		"                <button name=\"submit\" value=\"variableSpeedForm\" type=\"submit\">Snelheid aanpassen</button>\n"\
 		"            </p>\n"\
 		"        </fieldset>\n"\
