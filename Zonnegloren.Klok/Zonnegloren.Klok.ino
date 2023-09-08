@@ -85,7 +85,15 @@ void loop()
 	clock.update();	
 	minuteHand.update();	
 	hourHand.update();
-	webServer.update();
+
+	uint8_t currentHours, currentMinutes;
+	clock.getAbsoluteTime(&currentHours, &currentMinutes);
+
+	uint8_t variableStartHours, variableStartMinutes, variableEndHours, variableEndMinutes;
+	float variableStartSpeed, variableEndSpeed;
+	clock.getVariableSpeed(&variableStartHours, &variableStartMinutes, &variableEndHours, &variableEndMinutes, &variableStartSpeed, &variableEndSpeed);
+
+	webServer.update(wiFiNetwork.getLocalIPAddress(), currentHours, currentMinutes, clock.getConstantSpeed(), variableStartHours, variableEndHours, variableStartSpeed, variableEndHours, variableEndMinutes, variableEndSpeed);
 }
 
 void onConfigurationDataReceived(const char* ssid, const char* password, uint8_t keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName)

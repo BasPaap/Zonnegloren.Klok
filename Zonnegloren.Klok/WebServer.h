@@ -30,7 +30,7 @@ namespace Bas
 		
 	public:
 		enum page { configurationPage, firstCalibrationPage, controlPage };
-		enum httpMethod { unknown, GET, POST, PUT, PATCH, DELETE };
+		enum httpMethod { unknownHttpMethod, GET, POST, PUT, PATCH, DELETE };
 		
 		static const int maxScannedNetworks = 20;
 		static const int maxBodyLength = 255;
@@ -39,7 +39,7 @@ namespace Bas
 		WiFiServer server{ 80 };
 		page pageToServe;
 
-		enum controlFormType { unknown, time, constantSpeed, variableSpeed, calibration };
+		enum controlFormType { unknownFormType, time, constantSpeed, variableSpeed, calibration };
 		
 		Bas::NetworkInfo scannedNetworks[maxScannedNetworks];
 		int scannedNetworksLength = 0;
@@ -71,7 +71,7 @@ namespace Bas
 		WebServer();
 		void begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback);
 		void begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, ControlDataReceivedCallbackPointer onControlDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength);
-		void update();
+		void update(IPAddress localIPAddress, uint8_t currentHours, uint8_t currentMinutes, float constantSpeed, uint8_t startHours, uint8_t startMinutes, float variableStartSpeed, uint8_t endHours, uint8_t endMinutes, float variableEndSpeed);
 		void setPageToServe(page pageToServe);
 	};
 }

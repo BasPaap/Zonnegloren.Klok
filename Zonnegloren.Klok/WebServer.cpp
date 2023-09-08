@@ -33,13 +33,9 @@ Bas::WebServer::httpMethod Bas::WebServer::getHttpMethod(WiFiClient& client)
 		{
 			return POST;
 		}
-		else
-		{
-			return httpMethod::unknown;
-		}
 	}
 
-	return httpMethod::unknown;
+	return unknownHttpMethod;
 }
 
 Bas::WebServer::controlFormType Bas::WebServer::getControlFormType(const char* body)
@@ -62,7 +58,7 @@ Bas::WebServer::controlFormType Bas::WebServer::getControlFormType(const char* b
 		}
 		else
 		{
-			return controlFormType::unknown;
+			return unknownFormType;
 		}
 
 }
@@ -342,7 +338,7 @@ void Bas::WebServer::begin(ConfigurationDataReceivedCallbackPointer onConfigurat
 	begin(onConfigurationDataReceivedCallback, onControlDataReceivedCallback, requestResetCallback, onCalibrationDataReceivedCallback);
 }
 
-void Bas::WebServer::update()
+void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint8_t currentMinutes, float constantSpeed, uint8_t startHours, uint8_t startMinutes, float variableStartSpeed, uint8_t endHours, uint8_t endMinutes, float variableEndSpeed)
 {
 	if (!server.status())
 	{		
@@ -403,16 +399,6 @@ void Bas::WebServer::update()
 			}			
 		case controlPage:			
 		default:
-
-			uint8_t hours{ 0 };
-			uint8_t minutes{ 0 };
-			float constantSpeed{ 1 };
-			uint8_t startHours{ 0 };
-			uint8_t startMinutes{ 0 };
-			float variableStartSpeed{ 1 };
-			uint8_t endHours{ 0 };
-			uint8_t endMinutes{ 0 };
-			float variableEndSpeed{ 1 };
 			uint8_t calibrationHours{ 0 };
 			uint8_t calibrationMinutes{ 0 };
 
@@ -423,7 +409,7 @@ void Bas::WebServer::update()
 				switch (formType)
 				{
 				case controlFormType::time:
-					parseTimeData(body, &hours, &minutes);
+					parseTimeData(body, &currentHours, &currentMinutes);
 					break;
 				case controlFormType::constantSpeed:
 					parseConstantSpeedData(body, &constantSpeed);
@@ -433,9 +419,9 @@ void Bas::WebServer::update()
 					break;
 				case controlFormType::calibration:
 					parseTimeData(body, &calibrationHours, &calibrationMinutes);
-					onCalibrationDataReceived(calibrationHours, calibrationMinutes);
+					onCalibrationDataReceivedCallback(calibrationHours, calibrationMinutes);
 					break;
-				case controlFormType::unknown:
+				case unknownFormType:
 				default:
 					break;
 				}
@@ -443,7 +429,7 @@ void Bas::WebServer::update()
 				onControlDataReceivedCallback();
 			}
 
-			printControlPage(client, IPAddress{ 127,0,0,1 }, hours, minutes, constantSpeed, startHours, startMinutes, variableStartSpeed, endHours, endMinutes, variableEndSpeed);
+			printControlPage(client, localIPAddress, currentHours, currentMinutes, constantSpeed, startHours, startMinutes, variableStartSpeed, endHours, endMinutes, variableEndSpeed);
 			break;
 		}
 

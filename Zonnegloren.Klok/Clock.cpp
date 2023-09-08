@@ -13,7 +13,7 @@ void Bas::Clock::begin()
 {
 }
 
-void Bas::Clock::setTime(int hour, int minute)
+void Bas::Clock::setTime(uint8_t hour, uint8_t minute)
 {
 	// We'll consider the stepper motor's current positions to be the positions for currentHour and currentMinute.
 	// Therefore, we need to calculate the amount of steps we need to move each hand from currentHour to hour and from currentMinute to minute.
@@ -28,6 +28,12 @@ void Bas::Clock::getTime(float* hour, float* minute)
 	*hour = time.hour() + (*minute / numSecondsInHour);	
 }
 
+void Bas::Clock::getAbsoluteTime(uint8_t* hour, uint8_t* minute)
+{
+	*hour = time.hour();
+	*minute = time.minute();
+}
+
 float Bas::Clock::getConstantSpeed()
 {
 	return this->constantSpeed;
@@ -38,7 +44,7 @@ void Bas::Clock::setConstantSpeed(float speed)
 	this->constantSpeed = speed;
 }
 
-void Bas::Clock::setVariableSpeed(int startHour, int startMinute, int endHour, int endMinute, float startSpeed, float endSpeed)
+void Bas::Clock::setVariableSpeed(uint8_t startHour, uint8_t startMinute, uint8_t endHour, uint8_t endMinute, float startSpeed, float endSpeed)
 {
 	this->variableSpeedStartTime = Time(startHour, startMinute);
 	this->variableSpeedEndTime = Time(endHour, endMinute);
@@ -46,7 +52,7 @@ void Bas::Clock::setVariableSpeed(int startHour, int startMinute, int endHour, i
 	this->variableSpeedEndSpeed = endSpeed;
 }
 
-void Bas::Clock::getVariableSpeed(int* startHour, int* startMinute, int* endHour, int* endMinute, float* startSpeed, float* endSpeed)
+void Bas::Clock::getVariableSpeed(uint8_t* startHour, uint8_t* startMinute, uint8_t* endHour, uint8_t* endMinute, float* startSpeed, float* endSpeed)
 {
 	*startHour = this->variableSpeedStartTime.hour();
 	*startMinute = this->variableSpeedStartTime.minute();
