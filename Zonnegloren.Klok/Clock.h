@@ -21,7 +21,7 @@ namespace Bas
 		const int numMillisecondsInSecond = 1000;
 				
 		Time time{ 0, 0 };
-		float constantSpeed = 1;
+		float constantSpeed{ 0 };
 		
 		bool isRunningAtVariableSpeed = false;
 		Time variableSpeedStartTime = NULL;

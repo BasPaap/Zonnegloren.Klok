@@ -45,7 +45,6 @@ void setup()
 	Serial.begin(9600);
 	while (!Serial);  // wait for serial port to connect. Needed for native USB port only
 
-	clock.setConstantSpeed(60);
 	clock.begin();
 
 	minuteHand.begin();
@@ -61,9 +60,10 @@ void setup()
 		
 	if (configuration.isAvailable())
 	{		
+		clock.setConstantSpeed(1);
 		wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword(), configuration.getKeyIndex(), configuration.getEncryptionType(), onConnectionFailure);
 		mdns.begin(configuration.getDeviceDomainName(), wiFiNetwork.getLocalIPAddress());
-		webServer.begin(onConfigurationDataReceived, onResetRequested, onCalibrationDataReceived);
+		webServer.begin(onConfigurationDataReceived, onResetRequested, onCalibrationDataReceived, onSetTimeDataReceived, onConstantSpeedDataReceived, onVariableSpeedDataReceived);
 		webServer.setPageToServe(Bas::WebServer::page::firstCalibrationPage);	// Because the clock has just powered up, we have no idea what time the hands are on yet, so we need to calibrate first.
 	}
 	else
@@ -84,7 +84,7 @@ void setup()
 
 		wiFiNetwork.connectAsAccessPoint("Klok");
 		mdns.begin("klok.local", wiFiNetwork.getLocalIPAddress());
-		webServer.begin(onConfigurationDataReceived, onResetRequested, onCalibrationDataReceived, scannedNetworks, scannedNetworksLength);
+		webServer.begin(onConfigurationDataReceived, onResetRequested, onCalibrationDataReceived, onSetTimeDataReceived, onConstantSpeedDataReceived, onVariableSpeedDataReceived, scannedNetworks, scannedNetworksLength);
 		webServer.setPageToServe(Bas::WebServer::page::configurationPage);
 	}
 
