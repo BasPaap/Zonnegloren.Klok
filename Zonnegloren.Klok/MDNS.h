@@ -15,6 +15,10 @@ namespace Bas
 {
 	class Mdns
 	{
+	public:
+		enum LogLevel { none = 0, standard, verbose };
+
+	private:
 		static const int maxDomainNameLength = 253;
 		static const int maxDnsPacketSize = 512;
 		static const int queryTypeA = 0x01;
@@ -27,7 +31,8 @@ namespace Bas
 		char * deviceDomainName;
 		IPAddress localIPAddress;
 		WiFiUDP udp;
-
+		LogLevel logLevel;
+				
 		void handleMdnsPacket(const unsigned char packetBuffer[], int packetBufferSize);
 		int handleMdnsQuestion(const unsigned char packetBuffer[], int packetBufferSize, uint16_t questionFirstByteIndex);
 		void getRequestedDomainName(const unsigned char packetBuffer[], uint16_t domainNameFirstByteIndex, char domainName[], uint8_t* pDomainNameFieldLength);
@@ -38,6 +43,7 @@ namespace Bas
 		void uint32ToByteArray(uint32_t value, uint8_t* byteArray);
 
 	public:
+		Mdns(LogLevel logLevel = none);
 		void begin(char domainName[], IPAddress localIPAddress);
 		void update();
 	};

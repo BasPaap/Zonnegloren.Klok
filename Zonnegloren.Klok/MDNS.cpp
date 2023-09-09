@@ -6,10 +6,13 @@ void Bas::Mdns::begin(char domainName[], IPAddress localIPAddress)
 	deviceDomainName = domainName;
 	this->localIPAddress = localIPAddress;
 
-	Serial.print("Starting as ");
-	Serial.print(deviceDomainName);
-	Serial.print(" on ");
-	Serial.println(this->localIPAddress);
+	if (logLevel != none)
+	{
+		Serial.print("Starting as ");
+		Serial.print(deviceDomainName);
+		Serial.print(" on ");
+		Serial.println(this->localIPAddress);
+	}
 
 	udp.beginMulticast(mdnsAddress, mdnsPort);
 }
@@ -31,14 +34,21 @@ void Bas::Mdns::update()
 			totalBytesRead += numBytesRead;
 		} while (totalBytesRead < packetBufferSize);
 
-		Serial.print("Packet received, read ");
-		Serial.print(totalBytesRead);
-		Serial.print(" out of ");
-		Serial.print(packetBufferSize);
-		Serial.println(" bytes.");
-		
+		if (logLevel == verbose)
+		{
+			Serial.print("Packet received, read ");
+			Serial.print(totalBytesRead);
+			Serial.print(" out of ");
+			Serial.print(packetBufferSize);
+			Serial.println(" bytes.");
+		}
+	
 		handleMdnsPacket(packetBuffer, packetBufferSize);
 	}
+}
+
+Bas::Mdns::Mdns(LogLevel logLevel = none) : logLevel(logLevel)
+{	
 }
 
 void Bas::Mdns::handleMdnsPacket(const unsigned char packetBuffer[], int packetBufferSize)
@@ -53,7 +63,11 @@ void Bas::Mdns::handleMdnsPacket(const unsigned char packetBuffer[], int packetB
 		{
 			if (packetBuffer[questionByteIndex] > maxLabelLength && packetBuffer[questionByteIndex] >> 6 != 0b11) // If the label is larger than the possible length and this is not a compression label, ignore the rest because something is messed up.
 			{
-				Serial.println("Incorrect label length, ignoring the rest of the message.");
+				if (logLevel == verbose)
+				{
+					Serial.println("Incorrect label length, ignoring the rest of the message.");
+				}
+
 				break;
 			}
 
@@ -78,10 +92,14 @@ int Bas::Mdns::handleMdnsQuestion(const unsigned char packetBuffer[], int packet
 {
 	if (questionFirstByteIndex >= packetBufferSize)
 	{
-		Serial.print("Question byte index is larger than packet buffer size: index ");
-		Serial.print(questionFirstByteIndex);
-		Serial.print(", packet buffer size: ");
-		Serial.println(packetBufferSize);
+		if (logLevel == verbose)
+		{
+			Serial.print("Question byte index is larger than packet buffer size: index ");
+			Serial.print(questionFirstByteIndex);
+			Serial.print(", packet buffer size: ");
+			Serial.println(packetBufferSize);
+		}
+
 		return ignoreFurtherQuestions;
 	}
 		
@@ -91,11 +109,14 @@ int Bas::Mdns::handleMdnsQuestion(const unsigned char packetBuffer[], int packet
 	getRequestedDomainName(packetBuffer, questionFirstByteIndex, domainName, &domainNameFieldLength);
 	uint16_t queryType = packetBuffer[questionFirstByteIndex + domainNameFieldLength] << 8 | packetBuffer[questionFirstByteIndex + domainNameFieldLength + 1];
 
-	Serial.print("\tMDNS: ");
-	const char* queryTypeName = getQueryTypeName(queryType);
-	Serial.print(queryTypeName);
-	Serial.print(" type query received for ");
-	Serial.println(domainName);
+	if (logLevel == verbose)
+	{
+		Serial.print("\tMDNS: ");
+		const char* queryTypeName = getQueryTypeName(queryType);
+		Serial.print(queryTypeName);
+		Serial.print(" type query received for ");
+		Serial.println(domainName);
+	}
 
 	if (strcasecmp(deviceDomainName, domainName) == 0) // if this is a query for our domain name
 	{

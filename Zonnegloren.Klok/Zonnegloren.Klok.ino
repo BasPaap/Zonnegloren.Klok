@@ -28,7 +28,7 @@ const unsigned long debounceDelay = 50;
 
 Bas::Configuration configuration;
 Bas::WiFiNetwork wiFiNetwork;
-Bas::Mdns mdns;
+Bas::Mdns mdns{ Bas::Mdns::LogLevel::standard };
 Bas::WebServer webServer;
 Bas::Button clearConfigurationButton { clearConfigurationButtonPin, debounceDelay, Bas::Button::LogLevel::none };
 Bas::Clock clock;
@@ -45,6 +45,10 @@ void setup()
 	Serial.begin(9600);
 	while (!Serial);  // wait for serial port to connect. Needed for native USB port only
 
+	Serial.println("Welcome to Rusthuis Zonnegloren: De Klok");
+	bootLed.begin();
+	bootLed.turnOn();
+
 	clock.begin();
 
 	minuteHand.begin();
@@ -54,10 +58,7 @@ void setup()
 	configuration.begin();
 
 	configurationLed.begin();
-	
-	bootLed.begin();
-	bootLed.turnOn();
-		
+			
 	if (configuration.isAvailable())
 	{		
 		clock.setConstantSpeed(1);
@@ -182,7 +183,7 @@ void onClearConfigurationButtonPressed()
 
 void onResetRequested()
 {
-	Serial.println("Resetting arduino.");
+	Serial.println("Resetting Arduino.");
 	delay(1000);
 	asm volatile ("jmp 0x7800");
 }
