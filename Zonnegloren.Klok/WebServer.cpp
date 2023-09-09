@@ -377,7 +377,7 @@ void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint
 		char body[maxBodyLength + 1]{ 0 };
 		int bodyLength = getRequestBody(client, body);
 
-		Serial.println("Web server request received.");
+		Serial.print("Web server request received: ");
 
 		client.println("HTTP/1.1 200 OK");
 		client.println("Content-type:text/html");
@@ -386,9 +386,10 @@ void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint
 		switch (pageToServe)
 		{
 		case configurationPage:
-			Serial.println("Requested page: configuration.");
+			Serial.print("configuration");
 			if (method == POST)
 			{
+				Serial.println(" (POST)");
 				char ssid[maxSsidLength + 1];
 				char password[maxPasswordLength + 1];
 				char domainName[maxDomainNameLength + 1];
@@ -401,13 +402,15 @@ void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint
 			}
 			else
 			{
+				Serial.println(" (GET)");
 				printConfigurationPage(client);
 			}
 			break;
 		case firstCalibrationPage:
-			Serial.println("Requested page: first calibration.");
+			Serial.print("first calibration");
 			if (method == POST)
 			{
+				Serial.println(" (POST)");
 				uint8_t hours;
 				uint8_t minutes;
 
@@ -419,16 +422,18 @@ void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint
 			}
 			else
 			{
+				Serial.println(" (GET)");
 				printFirstCalibrationPage(client);
 				break;
 			}
 		case controlPage:
-			Serial.println("Requested page: configuration.");
+			Serial.print("configuration");
 			uint8_t calibrationHours{ 0 };
 			uint8_t calibrationMinutes{ 0 };
 
 			if (method == POST)
 			{
+				Serial.println(" (POST)");
 				controlFormType formType = getControlFormType(body);
 
 				switch (formType)
@@ -455,11 +460,15 @@ void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint
 					break;
 				}
 			}
+			else
+			{
+				Serial.println(" (GET)");
+			}
 
 			printControlPage(client, localIPAddress, currentHours, currentMinutes, constantSpeed, startHours, startMinutes, variableStartSpeed, endHours, endMinutes, variableEndSpeed);
 			break;
 		default:
-			Serial.println("Requested page: unknown.");
+			Serial.println("unknown");
 			break;
 		}
 
