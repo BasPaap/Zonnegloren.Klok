@@ -1,3 +1,5 @@
+#include "SignalLed.h"
+#include "Led.h"
 #include "Hand.h"
 #include "HandMotor.h"
 #include "L9110SStepperDriver.h"
@@ -16,8 +18,12 @@
 #include "HandMotor.h"
 #include "Hand.h"
 #include <Bas.Button.h>
+#include <Stepper.h>
+#include "SignalLed.h"
 
 const int clearConfigurationButtonPin = 10;
+const int configurationLedPin = 11;
+const int bootLedPin = 12;
 const unsigned long debounceDelay = 50;
 
 Bas::Configuration configuration;
@@ -30,8 +36,8 @@ Bas::L9110SStepperDriver minuteStepperDriver{ 720, 2, 3, 4, 5 };
 Bas::L9110SStepperDriver hourStepperDriver{ 720, 6, 7, 8, 9 };
 Bas::Hand minuteHand{ &clock, Bas::HandMotor { &minuteStepperDriver }, Bas::Hand::HandType::minute };
 Bas::Hand hourHand{ &clock, Bas::HandMotor { &hourStepperDriver }, Bas::Hand::HandType::hour };
-
-#include <Stepper.h>
+Bas::SignalLed configurationLed{ configurationLedPin };
+Bas::SignalLed bootLed{ bootLedPin };
 
 void setup()
 {
@@ -47,9 +53,14 @@ void setup()
 
 	clearConfigurationButton.begin(onClearConfigurationButtonPressed);
 	configuration.begin();
+
+	configurationLed.begin();
+	
+	bootLed.begin();
+	bootLed.turnOn();
 		
 	if (configuration.isAvailable())
-	{
+	{		
 		wiFiNetwork.connectAsClient(configuration.getSsid(), configuration.getPassword(), configuration.getKeyIndex(), configuration.getEncryptionType(), onConnectionFailure);
 		mdns.begin(configuration.getDeviceDomainName(), wiFiNetwork.getLocalIPAddress());
 		webServer.begin(onConfigurationDataReceived, onResetRequested, onCalibrationDataReceived);
@@ -57,6 +68,7 @@ void setup()
 	}
 	else
 	{
+		configurationLed.startBlinking(500, 1000);
 		int numNetworks = WiFi.scanNetworks();
 
 		Serial.print(numNetworks);
@@ -75,10 +87,14 @@ void setup()
 		webServer.begin(onConfigurationDataReceived, onResetRequested, onCalibrationDataReceived, scannedNetworks, scannedNetworksLength);
 		webServer.setPageToServe(Bas::WebServer::page::configurationPage);
 	}
+
+	bootLed.turnOff();
 }
 
 void loop()
 {
+	configurationLed.update();
+
 	clearConfigurationButton.update();
 	wiFiNetwork.update();
 	mdns.update();
