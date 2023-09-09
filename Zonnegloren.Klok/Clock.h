@@ -32,13 +32,13 @@ namespace Bas
 	public:
 		Clock();
 		void begin();
-		void setTime(uint8_t hour, uint8_t minute);
-		void getTime(float* hour, float* minute);
-		void getAbsoluteTime(uint8_t* hour, uint8_t* minute);
+		void setTime(uint8_t hours, uint8_t minutes);
+		void getTime(float* hours, float* minutes);
+		void getAbsoluteTime(uint8_t* hours, uint8_t* minutes);
 		float getConstantSpeed();
 		void setConstantSpeed(float speed);
-		void setVariableSpeed(uint8_t startHour, uint8_t startMinute, uint8_t endHour, uint8_t endMinute, float startSpeed, float endSpeed);
-		void getVariableSpeed(uint8_t* startHour, uint8_t* startMinute, uint8_t* endHour, uint8_t* endMinute, float* startSpeed, float* endSpeed);
+		void setVariableSpeed(uint8_t startHours, uint8_t startMinutes, float startSpeed, uint8_t endHours, uint8_t endMinutes, float endSpeed);
+		void getVariableSpeed(uint8_t* startHours, uint8_t* startMinutes, float* startSpeed, uint8_t* endHours, uint8_t* endMinutes, float* endSpeed);
 		float getCurrentSpeed();
 		void update();
 	};

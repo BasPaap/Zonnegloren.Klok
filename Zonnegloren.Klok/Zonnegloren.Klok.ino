@@ -94,7 +94,6 @@ void setup()
 void loop()
 {
 	configurationLed.update();
-
 	clearConfigurationButton.update();
 	wiFiNetwork.update();
 	mdns.update();
@@ -107,7 +106,7 @@ void loop()
 
 	uint8_t variableStartHours, variableStartMinutes, variableEndHours, variableEndMinutes;
 	float variableStartSpeed, variableEndSpeed;
-	clock.getVariableSpeed(&variableStartHours, &variableStartMinutes, &variableEndHours, &variableEndMinutes, &variableStartSpeed, &variableEndSpeed);
+	clock.getVariableSpeed(&variableStartHours, &variableStartMinutes, &variableStartSpeed, &variableEndHours, &variableEndMinutes, &variableEndSpeed);
 
 	webServer.update(wiFiNetwork.getLocalIPAddress(), currentHours, currentMinutes, clock.getConstantSpeed(), variableStartHours, variableEndHours, variableStartSpeed, variableEndHours, variableEndMinutes, variableEndSpeed);
 }
@@ -124,14 +123,48 @@ void onConfigurationDataReceived(const char* ssid, const char* password, uint8_t
 
 void onCalibrationDataReceived(uint8_t hours, uint8_t minutes)
 {
-	Serial.print("Calibration data received.");
+	Serial.print("Calibration data received: ");
+	Serial.print(hours);
+	Serial.print(":");
+	Serial.println(minutes);
 	hourHand.calibrate(hours);
 	minuteHand.calibrate(minutes);
 }
 
-void onControlDataReceived()
+void onSetTimeDataReceived(uint8_t hours, uint8_t minutes)
 {
+	Serial.print("Set time data received: ");
+	Serial.print(hours);
+	Serial.print(":");
+	Serial.println(minutes);
 
+	clock.setTime(hours, minutes);
+}
+
+void onConstantSpeedDataReceived(float speed)
+{
+	Serial.print("Constant speed data received: ");
+	Serial.println(speed);
+
+	clock.setConstantSpeed(speed);
+}
+
+void onVariableSpeedDataReceived(uint8_t startHours, uint8_t startMinutes, float startSpeed, uint8_t endHours, uint8_t endMinutes, float endSpeed)
+{
+	Serial.print("Variable speed data received:");
+	Serial.print(startHours);
+	Serial.print(":");
+	Serial.print(startMinutes);
+	Serial.print(" ");
+	Serial.print(startSpeed);
+	Serial.print(", ");
+	Serial.print(endHours);
+	Serial.print(":");
+	Serial.print(endMinutes);
+	Serial.print(" ");
+	Serial.println(endSpeed);
+
+	clock.setVariableSpeed(startHours, startMinutes, startSpeed, endHours, endMinutes, endSpeed);
 }
 
 void onConnectionFailure()

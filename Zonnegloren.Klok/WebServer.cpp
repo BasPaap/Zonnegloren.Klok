@@ -317,7 +317,7 @@ Bas::WebServer::WebServer()
 {
 }
 
-void Bas::WebServer::begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback)
+void Bas::WebServer::begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, TimeDataReceivedCallbackPointer onCalibrationDataReceivedCallback, TimeDataReceivedCallbackPointer onSetTimeDataReceivedCallback, ConstantSpeedDataReceivedCallbackPointer onConstantSpeedDataReceivedCallback, VariableSpeedDataReceivedCallbackPointer onVariableSpeedDataReceivedCallback)
 {
 	this->onConfigurationDataReceivedCallback = onConfigurationDataReceivedCallback;
 	this->requestResetCallback = requestResetCallback;
@@ -326,7 +326,7 @@ void Bas::WebServer::begin(ConfigurationDataReceivedCallbackPointer onConfigurat
 	server.begin();
 }
 
-void Bas::WebServer::begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength)
+void Bas::WebServer::begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, TimeDataReceivedCallbackPointer onCalibrationDataReceivedCallback, TimeDataReceivedCallbackPointer onSetTimeDataReceivedCallback, ConstantSpeedDataReceivedCallbackPointer onConstantSpeedDataReceivedCallback, VariableSpeedDataReceivedCallbackPointer onVariableSpeedDataReceivedCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength)
 {
 	this->scannedNetworksLength = scannedNetworksLength;
 	for (size_t i = 0; i < this->scannedNetworksLength; i++)
@@ -334,7 +334,7 @@ void Bas::WebServer::begin(ConfigurationDataReceivedCallbackPointer onConfigurat
 		this->scannedNetworks[i] = Bas::NetworkInfo{ scannedNetworks[i] };
 	}
 
-	begin(onConfigurationDataReceivedCallback, requestResetCallback, onCalibrationDataReceivedCallback);
+	begin(onConfigurationDataReceivedCallback, requestResetCallback, onCalibrationDataReceivedCallback, onSetTimeDataReceivedCallback, onConstantSpeedDataReceivedCallback, onVariableSpeedDataReceivedCallback);
 }
 
 void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint8_t currentMinutes, float constantSpeed, uint8_t startHours, uint8_t startMinutes, float variableStartSpeed, uint8_t endHours, uint8_t endMinutes, float variableEndSpeed)

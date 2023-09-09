@@ -44,7 +44,7 @@ void Bas::Clock::setConstantSpeed(float speed)
 	this->constantSpeed = speed;
 }
 
-void Bas::Clock::setVariableSpeed(uint8_t startHour, uint8_t startMinute, uint8_t endHour, uint8_t endMinute, float startSpeed, float endSpeed)
+void Bas::Clock::setVariableSpeed(uint8_t startHour, uint8_t startMinute, float startSpeed, uint8_t endHour, uint8_t endMinute, float endSpeed)
 {
 	this->variableSpeedStartTime = Time(startHour, startMinute);
 	this->variableSpeedEndTime = Time(endHour, endMinute);
@@ -52,7 +52,7 @@ void Bas::Clock::setVariableSpeed(uint8_t startHour, uint8_t startMinute, uint8_
 	this->variableSpeedEndSpeed = endSpeed;
 }
 
-void Bas::Clock::getVariableSpeed(uint8_t* startHour, uint8_t* startMinute, uint8_t* endHour, uint8_t* endMinute, float* startSpeed, float* endSpeed)
+void Bas::Clock::getVariableSpeed(uint8_t* startHour, uint8_t* startMinute, float* startSpeed, uint8_t* endHour, uint8_t* endMinute, float* endSpeed)
 {
 	*startHour = this->variableSpeedStartTime.hour();
 	*startMinute = this->variableSpeedStartTime.minute();

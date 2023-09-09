@@ -25,8 +25,10 @@ namespace Bas
 
 		using ConfigurationDataReceivedCallbackPointer = void(*)(const char* ssid, const char* password, uint8_t keyIndex, const Bas::NetworkInfo::encryptionType_t encryptionType, const char* domainName);
 		using RequestResetCallbackPointer = void(*)();
-		using CalibrationDataReceivedCallbackPointer = void(*)(uint8_t hours, uint8_t minutes);
-		
+		using TimeDataReceivedCallbackPointer = void(*)(uint8_t hours, uint8_t minutes);
+		using ConstantSpeedDataReceivedCallbackPointer = void(*)(float constantSpeed);
+		using VariableSpeedDataReceivedCallbackPointer = void(*)(uint8_t startHours, uint8_t startMinutes, float startSpeed, uint8_t endHours, uint8_t endMinutes, float endSpeed);
+				
 	public:
 		enum page { configurationPage, firstCalibrationPage, controlPage };
 		enum httpMethod { unknownHttpMethod, GET, POST, PUT, PATCH, DELETE };
@@ -44,7 +46,10 @@ namespace Bas
 		int scannedNetworksLength = 0;
 		ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback;
 		RequestResetCallbackPointer requestResetCallback;
-		CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback;
+		TimeDataReceivedCallbackPointer onCalibrationDataReceivedCallback;
+		TimeDataReceivedCallbackPointer onSetTimeDataReceivedCallback;
+		ConstantSpeedDataReceivedCallbackPointer onConstantSpeedDataReceivedCallback;
+		VariableSpeedDataReceivedCallbackPointer onVariableSpeedDataReceivedCallback;
 
 		controlFormType getControlFormType(const char* body);
 		void printPageHeader(WiFiClient& client, const char* title);
@@ -67,8 +72,8 @@ namespace Bas
 
 	public:
 		WebServer();
-		void begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback);
-		void begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, CalibrationDataReceivedCallbackPointer onCalibrationDataReceivedCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength);
+		void begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, TimeDataReceivedCallbackPointer onCalibrationDataReceivedCallback, TimeDataReceivedCallbackPointer onSetTimeDataReceivedCallback, ConstantSpeedDataReceivedCallbackPointer onConstantSpeedDataReceivedCallback, VariableSpeedDataReceivedCallbackPointer onVariableSpeedDataReceivedCallback);
+		void begin(ConfigurationDataReceivedCallbackPointer onConfigurationDataReceivedCallback, RequestResetCallbackPointer requestResetCallback, TimeDataReceivedCallbackPointer onCalibrationDataReceivedCallback, TimeDataReceivedCallbackPointer onSetTimeDataReceivedCallback, ConstantSpeedDataReceivedCallbackPointer onConstantSpeedDataReceivedCallback, VariableSpeedDataReceivedCallbackPointer onVariableSpeedDataReceivedCallback, Bas::NetworkInfo* scannedNetworks, int scannedNetworksLength);
 		void update(IPAddress localIPAddress, uint8_t currentHours, uint8_t currentMinutes, float constantSpeed, uint8_t startHours, uint8_t startMinutes, float variableStartSpeed, uint8_t endHours, uint8_t endMinutes, float variableEndSpeed);
 		void setPageToServe(page pageToServe);
 	};
