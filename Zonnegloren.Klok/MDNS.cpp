@@ -183,8 +183,11 @@ int Bas::Mdns::handleMdnsQuestion(const unsigned char packetBuffer[], int packet
 			IPAddress destinationAddress = isUnicast ? udp.remoteIP() : mdnsAddress;
 			uint16_t destinationPort = isUnicast ? udp.remotePort() : mdnsPort;
 
-			Serial.print("\tSending response to ");
-			Serial.println(destinationAddress);
+			if (logLevel == verbose)
+			{
+				Serial.print("\tSending response to ");
+				Serial.println(destinationAddress);
+			}
 
 			udp.beginPacket(destinationAddress, destinationPort);
 			udp.write(replyBuffer, replySize);

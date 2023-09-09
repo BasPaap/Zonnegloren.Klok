@@ -40,26 +40,49 @@ Bas::WebServer::httpMethod Bas::WebServer::getHttpMethod(WiFiClient& client)
 
 Bas::WebServer::controlFormType Bas::WebServer::getControlFormType(const char* body)
 {
-		if (strcmp("timeForm", body) == 0)
+	const char* timeFormType = "timeForm";
+	const char* speedFormType = "speedForm";
+	const char* variableSpeedFormType = "variableSpeedForm";
+	const char* calibrationFormType = "calibrationForm";
+	const char* submitToken = "submit=";
+
+	char bodyCopy[maxBodyLength + 1];
+	strcpy(bodyCopy, body);
+	char* token = strtok(bodyCopy, "&");
+
+	const int maxControlFormTypeCharacters{ strlen(variableSpeedFormType) };
+	char controlFormType[maxControlFormTypeCharacters + 1];
+
+	while (token != NULL)
+	{
+		if (startswith(token, submitToken))
 		{
-			return controlFormType::time;
+			urlDecode(token + strlen(submitToken), controlFormType);
 		}
-		else if (strcmp("speedForm", body) == 0)
-		{
-			return controlFormType::constantSpeed;
-		}
-		else if (strcmp("variableSpeedForm", body) == 0)
-		{
-			return controlFormType::variableSpeed;
-		}
-		else if (strcmp("calibrationForm", body) == 0)
-		{
-			return controlFormType::calibration;
-		}
-		else
-		{
-			return unknownFormType;
-		}
+
+		token = strtok(NULL, "&");
+	}
+
+	if (strcmp("timeForm", controlFormType) == 0)
+	{
+		return controlFormType::time;
+	}
+	else if (strcmp("speedForm", controlFormType) == 0)
+	{
+		return controlFormType::constantSpeed;
+	}
+	else if (strcmp("variableSpeedForm", controlFormType) == 0)
+	{
+		return controlFormType::variableSpeed;
+	}
+	else if (strcmp("calibrationForm", controlFormType) == 0)
+	{
+		return controlFormType::calibration;
+	}
+	else
+	{
+		return unknownFormType;
+	}
 
 }
 
@@ -75,14 +98,14 @@ int Bas::WebServer::getRequestBody(WiFiClient& client, char* body)
 		if (character == '\r')
 		{
 			client.read(); // read the '\n' character that will follow '\r'
-						
+
 			if (lineLength == 0)
 			{
 				// All meta information for the request has been sent, so what will follow is the body.
-				bodyLength = client.readBytes(body, maxBodyLength);				
+				bodyLength = client.readBytes(body, maxBodyLength);
 			}
 
-			lineLength = 0;			
+			lineLength = 0;
 		}
 		else
 		{
@@ -118,7 +141,7 @@ void Bas::WebServer::parseConfigurationData(char* body, char* ssid, char* passwo
 	const char* domainNameToken = "domainName=";
 	const char* encryptionTypeToken = "encryption=";
 	const char* keyIndexToken = "keyIndex=";
-	
+
 	char encryptionTypeCode[maxEncryptionTypeCodeLength + 1];
 	char keyIndexCode[maxKeyIndexLength + 1];
 
@@ -128,7 +151,7 @@ void Bas::WebServer::parseConfigurationData(char* body, char* ssid, char* passwo
 	{
 		if (startswith(token, ssidToken))
 		{
-			urlDecode(token + strlen(ssidToken), ssid);			
+			urlDecode(token + strlen(ssidToken), ssid);
 		}
 		else if (startswith(token, passwordToken))
 		{
@@ -136,7 +159,7 @@ void Bas::WebServer::parseConfigurationData(char* body, char* ssid, char* passwo
 		}
 		else if (startswith(token, domainNameToken))
 		{
-			urlDecode(token + strlen(domainNameToken), domainName);			
+			urlDecode(token + strlen(domainNameToken), domainName);
 		}
 		else if (startswith(token, encryptionTypeToken))
 		{
@@ -151,7 +174,7 @@ void Bas::WebServer::parseConfigurationData(char* body, char* ssid, char* passwo
 	}
 
 	*keyIndex = atoi(keyIndexCode);
-	
+
 	switch (atoi(encryptionTypeCode))
 	{
 	case 1:
@@ -164,7 +187,7 @@ void Bas::WebServer::parseConfigurationData(char* body, char* ssid, char* passwo
 	default:
 		*encryptionType = Bas::NetworkInfo::none;
 		break;
-	}	
+	}
 }
 
 void Bas::WebServer::parseTimeData(char* body, uint8_t* hours, uint8_t* minutes)
@@ -180,7 +203,7 @@ void Bas::WebServer::parseTimeData(char* body, uint8_t* hours, uint8_t* minutes)
 		if (startswith(token, timeToken))
 		{
 			urlDecode(token + strlen(timeToken), time);
-		}		
+		}
 
 		token = strtok(NULL, "&");
 	}
@@ -194,7 +217,7 @@ void Bas::WebServer::parseConstantSpeedData(char* body, float* constantSpeed)
 	char* token = strtok(body, "&");
 
 	const int maxSpeedCharacters{ 10 };
-	char speed[maxSpeedCharacters + 1];
+	char speed[maxSpeedCharacters + 1]{ 0 };
 
 	while (token != NULL)
 	{
@@ -202,11 +225,10 @@ void Bas::WebServer::parseConstantSpeedData(char* body, float* constantSpeed)
 		{
 			urlDecode(token + strlen(speedToken), speed);
 		}
-
 		token = strtok(NULL, "&");
 	}
 
-	*speed = atof(speed);
+	*constantSpeed = (float)atof(speed);
 }
 
 void Bas::WebServer::parseVariableSpeedData(char* body, uint8_t* startHours, uint8_t* startMinutes, float* variableStartSpeed, uint8_t* endHours, uint8_t* endMinutes, float* variableEndSpeed)
@@ -215,7 +237,7 @@ void Bas::WebServer::parseVariableSpeedData(char* body, uint8_t* startHours, uin
 	const char* startSpeedToken = "startSpeed=";
 	const char* endTimeToken = "endTime=";
 	const char* endSpeedToken = "endSpeed=";
-		
+
 	const int maxTimeCharacters{ 5 };
 	char startTime[maxTimeCharacters + 1];
 	char endTime[maxTimeCharacters + 1];
@@ -254,26 +276,26 @@ void Bas::WebServer::parseVariableSpeedData(char* body, uint8_t* startHours, uin
 }
 
 void Bas::WebServer::urlDecode(const char* input, char* output)
-{	
+{
 	char c;
 	char code0;
 	char code1;
 	int outputLength = 0;
 
-	for (int i = 0; i < strlen(input); i++) 
+	for (int i = 0; i < strlen(input); i++)
 	{
 		c = input[i];
 		if (c == '+') {
 			output[outputLength++] = ' ';
 		}
-		else if (c == '%') 
+		else if (c == '%')
 		{
 			code0 = input[++i];
 			code1 = input[++i];
 			c = (h2int(code0) << 4) | h2int(code1);
 			output[outputLength++] = c;
 		}
-		else 
+		else
 		{
 			output[outputLength++] = c;
 		}
@@ -286,15 +308,15 @@ void Bas::WebServer::urlDecode(const char* input, char* output)
 
 unsigned char Bas::WebServer::h2int(char c)
 {
-	if (c >= '0' && c <= '9') 
+	if (c >= '0' && c <= '9')
 	{
 		return((unsigned char)c - '0');
 	}
-	if (c >= 'a' && c <= 'f') 
+	if (c >= 'a' && c <= 'f')
 	{
 		return((unsigned char)c - 'a' + 10);
 	}
-	if (c >= 'A' && c <= 'F') 
+	if (c >= 'A' && c <= 'F')
 	{
 		return((unsigned char)c - 'A' + 10);
 	}
@@ -322,6 +344,9 @@ void Bas::WebServer::begin(ConfigurationDataReceivedCallbackPointer onConfigurat
 	this->onConfigurationDataReceivedCallback = onConfigurationDataReceivedCallback;
 	this->requestResetCallback = requestResetCallback;
 	this->onCalibrationDataReceivedCallback = onCalibrationDataReceivedCallback;
+	this->onSetTimeDataReceivedCallback = onSetTimeDataReceivedCallback;
+	this->onConstantSpeedDataReceivedCallback = onConstantSpeedDataReceivedCallback;
+	this->onVariableSpeedDataReceivedCallback = onVariableSpeedDataReceivedCallback;
 	
 	server.begin();
 }
@@ -340,7 +365,7 @@ void Bas::WebServer::begin(ConfigurationDataReceivedCallbackPointer onConfigurat
 void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint8_t currentMinutes, float constantSpeed, uint8_t startHours, uint8_t startMinutes, float variableStartSpeed, uint8_t endHours, uint8_t endMinutes, float variableEndSpeed)
 {
 	if (!server.status())
-	{		
+	{
 		server.begin();
 	}
 
@@ -348,20 +373,20 @@ void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint
 	if (client)
 	{
 		httpMethod method = getHttpMethod(client);
-				
+
 		char body[maxBodyLength + 1]{ 0 };
 		int bodyLength = getRequestBody(client, body);
-		
+
 		Serial.println("Web server request received.");
 
 		client.println("HTTP/1.1 200 OK");
 		client.println("Content-type:text/html");
 		client.println();
-				
+
 		switch (pageToServe)
 		{
 		case configurationPage:
-
+			Serial.println("Requested page: configuration.");
 			if (method == POST)
 			{
 				char ssid[maxSsidLength + 1];
@@ -369,7 +394,7 @@ void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint
 				char domainName[maxDomainNameLength + 1];
 				Bas::NetworkInfo::encryptionType_t encryptionType;
 				uint8_t keyIndex;
-				
+
 				parseConfigurationData(body, ssid, password, domainName, &encryptionType, &keyIndex);
 				printConfirmConfigurationPage(client, ssid, domainName);
 				this->onConfigurationDataReceivedCallback(ssid, password, keyIndex, encryptionType, strlwr(domainName));
@@ -380,6 +405,7 @@ void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint
 			}
 			break;
 		case firstCalibrationPage:
+			Serial.println("Requested page: first calibration.");
 			if (method == POST)
 			{
 				uint8_t hours;
@@ -392,29 +418,37 @@ void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint
 				break;
 			}
 			else
-			{	
+			{
 				printFirstCalibrationPage(client);
-				break;				
-			}			
-		case controlPage:			
-		default:
+				break;
+			}
+		case controlPage:
+			Serial.println("Requested page: configuration.");
 			uint8_t calibrationHours{ 0 };
 			uint8_t calibrationMinutes{ 0 };
 
 			if (method == POST)
-			{				
+			{
 				controlFormType formType = getControlFormType(body);
+
+				Serial.print("Form type: ");
+				Serial.println(formType);
 
 				switch (formType)
 				{
 				case controlFormType::time:
 					parseTimeData(body, &currentHours, &currentMinutes);
+					onSetTimeDataReceivedCallback(currentHours, currentMinutes);
 					break;
 				case controlFormType::constantSpeed:
-					parseConstantSpeedData(body, &constantSpeed);
+					parseConstantSpeedData(body, &constantSpeed);		
+					Serial.println("how?");
+					delay(2000);
+					onConstantSpeedDataReceivedCallback(constantSpeed);
 					break;
 				case controlFormType::variableSpeed:
 					parseVariableSpeedData(body, &startHours, &startMinutes, &variableStartSpeed, &endHours, &endMinutes, &variableEndSpeed);
+					onVariableSpeedDataReceivedCallback(startHours, startMinutes, variableStartSpeed, endHours, endMinutes, variableEndSpeed);
 					break;
 				case controlFormType::calibration:
 					parseTimeData(body, &calibrationHours, &calibrationMinutes);
@@ -422,11 +456,15 @@ void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint
 					break;
 				case unknownFormType:
 				default:
+					Serial.println("Unknown control form type was posted.");
 					break;
-				}				
+				}
 			}
 
 			printControlPage(client, localIPAddress, currentHours, currentMinutes, constantSpeed, startHours, startMinutes, variableStartSpeed, endHours, endMinutes, variableEndSpeed);
+			break;
+		default:
+			Serial.println("Requested page: unknown.");
 			break;
 		}
 
