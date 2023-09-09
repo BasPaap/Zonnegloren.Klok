@@ -414,7 +414,7 @@ void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint
 				parseTimeData(body, &hours, &minutes);
 				this->onCalibrationDataReceivedCallback(hours, minutes);
 				setPageToServe(controlPage); // Serve Control pages from now on.
-				printControlPage(client, IPAddress{ 127,0,0,1 }, hours, minutes, 1, 0, 0, 1, 0, 0, 1);
+				printControlPage(client, localIPAddress, hours, minutes, 1, 0, 0, 1, 0, 0, 1);
 				break;
 			}
 			else
@@ -431,9 +431,6 @@ void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint
 			{
 				controlFormType formType = getControlFormType(body);
 
-				Serial.print("Form type: ");
-				Serial.println(formType);
-
 				switch (formType)
 				{
 				case controlFormType::time:
@@ -442,8 +439,6 @@ void Bas::WebServer::update(IPAddress localIPAddress, uint8_t currentHours, uint
 					break;
 				case controlFormType::constantSpeed:
 					parseConstantSpeedData(body, &constantSpeed);		
-					Serial.println("how?");
-					delay(2000);
 					onConstantSpeedDataReceivedCallback(constantSpeed);
 					break;
 				case controlFormType::variableSpeed:

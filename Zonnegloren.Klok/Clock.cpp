@@ -7,6 +7,7 @@
 
 Bas::Clock::Clock()
 {
+	setVariableSpeed(0, 0, 1, 0, 0, 1);
 }
 
 void Bas::Clock::begin()

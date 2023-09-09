@@ -128,6 +128,7 @@ void onCalibrationDataReceived(uint8_t hours, uint8_t minutes)
 	Serial.print(hours);
 	Serial.print(":");
 	Serial.println(minutes);
+	clock.setTime(hours, minutes);
 	hourHand.calibrate(hours);
 	minuteHand.calibrate(minutes);
 }
